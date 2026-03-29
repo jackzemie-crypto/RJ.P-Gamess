@@ -811,7 +811,6 @@ export const MANGA_DATA: LibraryItem[] = MANGA.map(manga => ({
 
 export const APPS_DATA: LibraryItem[] = [
   { t: "YouTube", l: "https://youtube.com", img: "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=800&q=80", year: 2005, genre: ["Video", "Social"], rating: 9.8 },
-  { t: "Discord", l: "https://discord.com", img: "https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?w=800&q=80", year: 2015, genre: ["Chat", "Social"], rating: 9.5 },
   { t: "TikTok", l: "https://tiktok.com", img: "https://images.unsplash.com/photo-1611605698335-8b1569810432?w=800&q=80", year: 2016, genre: ["Social", "Video"], rating: 8.9 },
   { t: "GitHub", l: "https://github.com", img: "https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=800&q=80", year: 2008, genre: ["Development", "Code"], rating: 9.7 },
   { t: "ChatGPT", l: "https://chat.openai.com", img: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&q=80", year: 2022, genre: ["AI", "Tools"], rating: 9.9 },

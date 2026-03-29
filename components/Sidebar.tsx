@@ -48,10 +48,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeCategory, onSelect, logoUrl, on
   return (
     <motion.aside 
       initial={false}
-      animate={{ height: isHovered ? 160 : 80 }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className="bg-bg border-b border-white/5 flex flex-row items-center px-8 shrink-0 transition-all duration-300 z-[100] w-full relative"
+      className="bg-bg border-b border-white/5 flex flex-row items-center px-8 py-4 shrink-0 transition-all duration-300 z-[100] w-full relative"
     >
       <div className="mr-12">
         <motion.div 
@@ -96,18 +93,9 @@ const Sidebar: React.FC<SidebarProps> = ({ activeCategory, onSelect, logoUrl, on
                 }`}>
                   <Icon size={22} />
                 </div>
-                <AnimatePresence>
-                  {isHovered && (
-                    <motion.span 
-                      initial={{ opacity: 0, x: -5 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -5 }}
-                      className="text-[10px] font-black uppercase tracking-[0.2em] italic"
-                    >
-                      {t(item.label)}
-                    </motion.span>
-                  )}
-                </AnimatePresence>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] italic">
+                  {t(item.label)}
+                </span>
               </button>
             );
           })}

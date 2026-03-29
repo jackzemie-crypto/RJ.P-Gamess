@@ -6,7 +6,7 @@
   **Your all-in-one entertainment hub.**
   
   [![Live Site](https://img.shields.io/badge/Live%20Site-RJ.P%20Games-ff2644?style=for-the-badge)](#)
-  [![Discord](https://img.shields.io/badge/Discord-Join-5865F2?style=for-the-badge&logo=discord)](http://discord.gg/cuHARsXESW)
+  [![Discord](https://img.shields.io/badge/Discord-Join-5865F2?style=for-the-badge&logo=discord)](#)
 </div>
 
 ---
