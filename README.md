@@ -1,7 +1,7 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/ohsols/czonev2/main/logo.svg" width="120" height="120" alt="ChillZone Logo" />
+  <img src="https://raw.githubusercontent.com/ohsols/czonev2/main/logo.svg" width="120" height="120" alt="RJ.P Games Logo" />
   
-  # CHILLZONE
+  # RJ.P GAMES
   
   **Your all-in-one entertainment hub.**
   
@@ -11,9 +11,9 @@
 
 ---
 
-## What is ChillZone?
+## What is RJ.P Games?
 
-ChillZone is a personal media library and entertainment hub. Browse movies, TV shows, anime, manga, listen to music, and find proxies all in one sleek dark interface.
+RJ.P Games is a personal media library and entertainment hub. Browse movies, TV shows, anime, manga, listen to music, and find proxies all in one sleek dark interface.
 
 ## Features
 

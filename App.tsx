@@ -63,7 +63,7 @@ const App: React.FC = () => {
   const { t } = useLanguage();
 
   useEffect(() => {
-    const savedLogo = localStorage.getItem('chillzone_custom_logo');
+    const savedLogo = localStorage.getItem('rjpgames_custom_logo');
     if (savedLogo) setCustomLogo(savedLogo);
     
     const savedTheme = localStorage.getItem('theme') || 'default';
@@ -98,7 +98,7 @@ const App: React.FC = () => {
 
   const handleUpdateLogo = (newLogoUrl: string) => {
     setCustomLogo(newLogoUrl);
-    localStorage.setItem('chillzone_custom_logo', newLogoUrl);
+    localStorage.setItem('rjpgames_custom_logo', newLogoUrl);
   };
 
   const handleOpenDetails = (item: LibraryItem, category: string) => {
@@ -251,7 +251,7 @@ const App: React.FC = () => {
             >
                 {isSidebarVisible ? <X size={20} /> : <LayoutGrid size={20} />}
             </button>
-            <div className="text-xs text-text-secondary">© 2026 ChillZone</div>
+            <div className="text-xs text-text-secondary">© 2026 RJ.P Games</div>
         </div>
 
         {isSidebarVisible && !selectedGame && (
@@ -427,7 +427,7 @@ const App: React.FC = () => {
                             {t('Devs')}
                           </h1>
                           <p className="text-text-muted text-lg font-medium max-w-2xl mx-auto">
-                            {t('The team behind ChillZone.')} <span className="text-accent font-bold">{t('Click on our cards')}</span> {t('to visit our personal sites and socials!')}
+                            {t('The team behind RJ.P Games.')} <span className="text-accent font-bold">{t('Click on our cards')}</span> {t('to visit our personal sites and socials!')}
                           </p>
                         </div>
                         <section>
