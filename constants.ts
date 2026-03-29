@@ -247,7 +247,7 @@ const LINK_DB: Record<string, string> = {
   "Spider-Man: Far From Home": "https://drive.google.com/file/d/1vPNUTkubVVmguVfwstRQm5xgbkRRii6z/view",
   "Spider-Man: No Way Home": "https://drive.google.com/file/d/1mUF4PcT0_ZKofV0KHHdjxgTQdhF2BliQ/view",
   "Spider-Man: Into the Spider-verse": "https://drive.google.com/file/d/1V3Bq0lrDQUxJay5DDs3gK69ZvRNb1j2u/view?usp=share_link",
-  "Spider-Man Across The Spider-Verse": "https://drive.google.com/file/d/1Sd1l_LhKRp_2OE5gRJJyPubnZjJccLgQ/view?usp=sharing",
+  "Spider-Man Across The Spider-Verse": "https://drive.google.com/file/d/19DDFQa5wunk2GD8jaTSVeO5w07uwmBK8/view?usp=sharing",
   "Spider-Man": "https://drive.google.com/file/d/1sqWGrmbGc5lBmoFbtfMSIaqb60eXppvF/view?usp=share_link",
   "Spider-Man 2": "https://drive.google.com/file/d/1yV7ZmEkfOVOLdV51wN6vSeDf3_tQqBvf/view?usp=share_link",
   "Spider-Man 3": "https://drive.google.com/file/d/1ExTfRPC3YGmCSg8W2uFSYkUMw7a1vcTR/view?usp=share_link",
@@ -884,6 +884,6 @@ export const PARTNERS_DATA: PartnerItem[] = [
 ];
 
 export const STAFF_DATA: StaffMember[] = [
-  { name: "RJ.P", role: "Owner", img: "https://i.pinimg.com/1200x/90/54/72/9054723fa92af09702e7e72b44f0c232.jpg", link: "https://guns.lol/ohsols" },
+  { name: "RJ.P", role: "Owner", img: "https://i.pinimg.com/1200x/90/54/72/9054723fa92af09702e7e72b72b44f0c232.jpg", link: "https://guns.lol/zemie" },
   { name: "soon", role: "Co-Owner", img: "https://i.pinimg.com/736x/de/7d/d1/de7dd1dac309810a55559f1b4bac930a.jpg", link: "https://guns.lol/" }
 ];
