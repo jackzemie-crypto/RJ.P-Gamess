@@ -526,7 +526,7 @@ const App: React.FC = () => {
             >
               <ShieldAlert size={48} className="mx-auto text-accent mb-6" />
               <h3 className="text-2xl font-black italic uppercase text-white mb-4">{t('External Link Warning')}</h3>
-              <p className="text-text-muted mb-8 font-medium">{t('You are about to leave Chillzone to view')} <span className="text-white font-bold"><TranslatedText text={selectedStaff.name} />'s</span> {t('socials. Proceed with caution.')}</p>
+              <p className="text-text-muted mb-8 font-medium">{t('You are about to leave RJ.P Games to view')} <span className="text-white font-bold"><TranslatedText text={selectedStaff.name} />'s</span> {t('socials. Proceed with caution.')}</p>
               <div className="flex gap-4">
                 <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => setSelectedStaff(null)} className="flex-1 py-4 rounded-xl bg-surface-active text-white font-bold uppercase tracking-widest text-xs hover:bg-surface-hover transition-colors">{t('Abort')}</motion.button>
                 <motion.a whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} href={selectedStaff.link} target="_blank" onClick={() => setSelectedStaff(null)} className="flex-1 py-4 rounded-xl bg-accent text-white font-bold uppercase tracking-widest text-xs hover:bg-accent/80 transition-colors flex items-center justify-center gap-2">{t('Proceed')} <ExternalLink size={14} /></motion.a>
