@@ -868,7 +868,15 @@ export const PROXIES_DATA: ProxyItem[] = [
   { url: "https://hcstemm.org/", name: "HC Stemm" },
 ];
 
-export const PARTNERS_DATA: PartnerItem[] = [];
+export const PARTNERS_DATA: PartnerItem[] = [
+  { 
+    name: "RJ.P Games", 
+    owner: "RJ.P", 
+    url: "https://rj-p-gamess.vercel.app/",
+    banner: "https://files.catbox.moe/4wz029.svg",
+    avatar: "https://files.catbox.moe/4wz029.svg"
+  }
+];
 
 export const STAFF_DATA: StaffMember[] = [
   { name: "RJ.P", role: "Owner", img: "https://files.catbox.moe/5mijpj.png", link: "https://guns.lol/zzemie" },
