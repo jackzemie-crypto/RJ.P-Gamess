@@ -868,19 +868,7 @@ export const PROXIES_DATA: ProxyItem[] = [
   { url: "https://hcstemm.org/", name: "HC Stemm" },
 ];
 
-export const PARTNERS_DATA: PartnerItem[] = [
-  { 
-    name: "カービィアーケード", 
-    owner: "SAM", 
-    url: "https://sites.google.com/view/fus3-bomb/page", 
-    urls: [
-      { name: "Google Sites", url: "https://sites.google.com/view/fus3-bomb/page" },
-      { name: "GitHub Pages", url: "https://mkplaza.github.io/" }
-    ],
-    banner: "https://preview.redd.it/what-are-your-favorite-meta-knight-battle-themes-and-v0-2rludfrd5hqb1.jpg?width=640&crop=smart&auto=webp&s=9a5cf8aac407cfafbcea666f0baca6293dfa2123",
-    avatar: "https://cdn.jsdelivr.net/gh/MKPlaza/MKPlaza.github.io@main/Meta_Knight_Logo.webp"
-  }
-];
+export const PARTNERS_DATA: PartnerItem[] = [];
 
 export const STAFF_DATA: StaffMember[] = [
   { name: "RJ.P", role: "Owner", img: "https://files.catbox.moe/5mijpj.png", link: "https://guns.lol/zzemie" },
