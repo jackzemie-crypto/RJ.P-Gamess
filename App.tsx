@@ -15,7 +15,7 @@ import { getEmulatorHtml } from './services/emulatorService';
 import { useLanguage } from './context/LanguageContext';
 import { Search, X, Film, Sparkles, BookOpen, Tv, SearchX, PlayCircle, Star, Globe, Users, ExternalLink, ShieldAlert, Zap, MessageSquare, Loader2, Book, AlertTriangle, Settings as SettingsIcon, GitCommit, ChevronDown, LayoutGrid, Gamepad2 } from 'lucide-react';
 
-const DEFAULT_LOGO = "/logo.svg";
+const DEFAULT_LOGO = "https://files.catbox.moe/4wz029.svg";
 
 const DiscordIcon = ({ size = 20, className = "" }: { size?: number, className?: string }) => (
   <svg 
