@@ -1,6 +1,8 @@
 import { Game } from './types';
+import { HTML_GAMES } from './htmlGames';
 
 export const GAMES: Game[] = [
+  ...HTML_GAMES,
   { id: "banjo-kazooie", title: "Banjo-Kazooie", platform: "Nintendo", system: "N64", year: "1998", color: "from-blue-500 to-yellow-600", desc: "A bear and bird adventure to stop the witch Gruntilda.", icon: "fa-puzzle-piece", iconColor: "text-blue-300", image: "https://cdn.jsdelivr.net/gh/MKPlaza/assets@main/images/banjo-kazooie.webp" },
             { id: "banjo-tooie", title: "Banjo-Tooie", platform: "Nintendo", system: "N64", year: "2000", color: "from-yellow-600 to-green-600", desc: "The massive sequel featuring dual-character mechanics.", icon: "fa-puzzle-piece", iconColor: "text-green-300", image: "https://cdn.jsdelivr.net/gh/MKPlaza/assets@main/images/banjo-tooie.jpeg" },
             { id: "bomberman-hero", title: "Bomberman Hero", platform: "Nintendo", system: "N64", year: "1998", color: "from-blue-400 to-indigo-600", desc: "Jump and bomb through planet-hopping platforming levels.", icon: "fa-bomb", iconColor: "text-white", image: "https://cdn.jsdelivr.net/gh/MKPlaza/assets@main/images/bomberman-hero.jpg" },
