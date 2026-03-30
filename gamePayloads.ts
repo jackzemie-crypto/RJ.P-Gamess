@@ -38669,7 +38669,7 @@ let joystick = nipplejs.create({
 </html>
 `
 },
-'pokemon-light-platinum': {
+'pokemon-light-platinum-gba': {
     title: "Pokémon Light Platinum (GBA)",
     customHtml: `
 <!DOCTYPE html>
