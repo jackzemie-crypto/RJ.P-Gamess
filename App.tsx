@@ -208,12 +208,21 @@ const App: React.FC = () => {
                       allow="autoplay; fullscreen; keyboard"
                     />
                   ) : selectedGame.link ? (
-                    <iframe 
-                      srcDoc={getEmulatorHtml(selectedGame)}
-                      className="w-full h-full border-none"
-                      title={selectedGame.title}
-                      allow="autoplay; fullscreen; keyboard"
-                    />
+                    selectedGame.system === 'HTML5' ? (
+                      <iframe 
+                        src={selectedGame.link}
+                        className="w-full h-full border-none"
+                        title={selectedGame.title}
+                        allow="autoplay; fullscreen; keyboard; gamepad; microphone; camera"
+                      />
+                    ) : (
+                      <iframe 
+                        srcDoc={getEmulatorHtml(selectedGame)}
+                        className="w-full h-full border-none"
+                        title={selectedGame.title}
+                        allow="autoplay; fullscreen; keyboard"
+                      />
+                    )
                   ) : (
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8">
                       <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mb-6">
