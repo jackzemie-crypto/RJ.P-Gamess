@@ -208,38 +208,12 @@ const App: React.FC = () => {
                       allow="autoplay; fullscreen; keyboard"
                     />
                   ) : selectedGame.link ? (
-                    selectedGame.system === 'HTML5' ? (
-                      <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8">
-                        <div className="w-24 h-24 rounded-full bg-accent/20 flex items-center justify-center mb-8 animate-pulse">
-                          <Gamepad2 className="w-12 h-12 text-accent" />
-                        </div>
-                        <h3 className="text-3xl font-bold text-white mb-4">{selectedGame.title}</h3>
-                        <p className="text-neutral-400 mb-8 max-w-md">This game will open in a new window for the best experience</p>
-                        <div className="flex gap-4">
-                          <button 
-                            onClick={() => {
-                              window.open(selectedGame.link, '_blank', 'width=1280,height=720,menubar=no,toolbar=no,location=no,status=no');
-                            }}
-                            className="px-8 py-4 bg-accent text-white rounded-xl font-bold text-sm uppercase tracking-wider hover:bg-accent/90 transition-all flex items-center gap-3"
-                          >
-                            <PlayCircle size={20} /> Launch Game
-                          </button>
-                          <button 
-                            onClick={() => setSelectedGame(null)}
-                            className="px-8 py-4 bg-white/10 text-white rounded-xl font-bold text-sm uppercase tracking-wider hover:bg-white/20 transition-all"
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <iframe 
-                        srcDoc={getEmulatorHtml(selectedGame)}
-                        className="w-full h-full border-none"
-                        title={selectedGame.title}
-                        allow="autoplay; fullscreen; keyboard"
-                      />
-                    )
+                    <iframe 
+                      srcDoc={getEmulatorHtml(selectedGame)}
+                      className="w-full h-full border-none"
+                      title={selectedGame.title}
+                      allow="autoplay; fullscreen; keyboard"
+                    />
                   ) : (
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8">
                       <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mb-6">
