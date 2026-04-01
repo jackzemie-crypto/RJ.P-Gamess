@@ -54,11 +54,9 @@ const Sidebar: React.FC<SidebarProps> = ({ activeCategory, onSelect, logoUrl, on
     <motion.aside 
       initial={false}
       animate={{ 
-        height: isChatCategory ? (isHovered ? 80 : 10) : (isSidebarVisible ? 80 : 0),
-        opacity: isChatCategory ? (isHovered ? 1 : 0.1) : (isSidebarVisible ? 1 : 0)
+        height: 80,
+        opacity: 1
       }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
       className="bg-bg border-b border-white/5 flex flex-row items-center px-8 shrink-0 transition-all duration-300 z-[100] w-full relative"
     >
       <div className="mr-12">

@@ -94,20 +94,18 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ collectionName = 'chat', isAdmin = 
       <div className="flex-1 overflow-y-auto space-y-4 mb-4 custom-scrollbar">
         {messages.map((msg) => (
           <div key={msg.id} className={`flex flex-col ${msg.uid === auth.currentUser?.uid ? 'items-end' : 'items-start'}`}>
-            {msg.role && (msg.role === 'admin' || msg.role === 'super-admin' || msg.role === 'donator') && (
+            {msg.role && (msg.role === 'admin' || msg.role === 'super-admin') && (
               <motion.div 
                 initial={{ opacity: 0, y: 5 }}
                 animate={{ opacity: 1, y: 0 }}
                 className={`mb-1 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest flex items-center gap-1 shadow-lg ${
                   msg.role === 'super-admin' 
                     ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-black' 
-                    : msg.role === 'donator'
-                    ? 'bg-green-500 text-white'
                     : 'bg-accent text-white'
                 }`}
               >
-                {msg.role === 'donator' ? <DollarSign size={10} /> : <ShieldCheck size={10} />}
-                {msg.role === 'super-admin' ? 'Owner' : (msg.role === 'donator' ? 'Donator 💵' : 'Admin')}
+                <ShieldCheck size={10} />
+                {msg.role === 'super-admin' ? 'Owner' : 'Admin'}
               </motion.div>
             )}
             <div className={`max-w-[70%] p-3 rounded-2xl ${msg.uid === auth.currentUser?.uid ? 'bg-accent text-white' : 'bg-white/5 text-neutral-300'}`}>
