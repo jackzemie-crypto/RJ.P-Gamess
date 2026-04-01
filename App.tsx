@@ -21,7 +21,7 @@ import AdminDashboard from './components/AdminDashboard';
 import AuthModal from './components/AuthModal';
 import SuggestionModal from './components/SuggestionModal';
 import { SiteAnnouncements } from './components/SiteAnnouncements';
-import { Search, X, Film, Sparkles, BookOpen, Tv, SearchX, PlayCircle, Star, Globe, Users, ExternalLink, ShieldAlert, Zap, MessageSquare, Activity, Loader2, Book, AlertTriangle, Settings as SettingsIcon, GitCommit, ChevronDown, LayoutGrid, Gamepad2, ShieldCheck, LogOut, LogIn, Send, UserPlus } from 'lucide-react';
+import { Search, X, Film, Sparkles, BookOpen, Tv, SearchX, PlayCircle, Star, Globe, Users, ExternalLink, ShieldAlert, Zap, MessageSquare, Activity, Loader2, Book, AlertTriangle, Settings as SettingsIcon, GitCommit, ChevronDown, LayoutGrid, Gamepad2, ShieldCheck, LogOut, LogIn, Send } from 'lucide-react';
 
 const DEFAULT_LOGO = "https://files.catbox.moe/5mijpj.png";
 
@@ -524,36 +524,12 @@ const App: React.FC = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => {
-                  console.log('Login button clicked, current user:', user);
-                  if (user) {
-                    logout();
-                  } else {
-                    console.log('Opening auth modal in login mode');
-                    setIsAuthModalOpen(true);
-                  }
-                }}
+                onClick={user ? logout : () => setIsAuthModalOpen(true)}
                 className="w-10 h-10 flex items-center justify-center rounded-xl bg-surface-hover border border-white/5 text-text-secondary hover:text-white hover:border-white/20 transition-all duration-300"
-                title={user ? "Logout" : "Login"}
+                title={user ? "Logout" : "Login / Sign Up"}
               >
                 {user ? <LogOut size={18} /> : <LogIn size={18} />}
               </motion.button>
-
-              {!user && (
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => {
-                    console.log('Sign Up button clicked');
-                    setIsAuthModalOpen(true);
-                  }}
-                  className="px-4 h-10 flex items-center justify-center gap-2 rounded-xl bg-accent border border-accent text-white hover:bg-accent/90 transition-all duration-300 font-bold text-sm"
-                  title="Sign Up"
-                >
-                  <UserPlus size={18} />
-                  Sign Up
-                </motion.button>
-              )}
 
               <motion.a 
                 whileHover={{ scale: 1.05 }}
