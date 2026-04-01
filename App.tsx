@@ -832,17 +832,6 @@ const App: React.FC = () => {
                                 </li>
                               </ul>
                             </div>
-                            
-                            <div className="bg-accent/10 border border-accent/20 rounded-2xl p-6 shadow-xl">
-                              <h3 className="text-xl font-black italic uppercase tracking-tighter text-accent mb-2">Support Us</h3>
-                              <p className="text-xs text-text-secondary mb-4">Help keep ChillZone alive by donating. Donators get a special badge in chat!</p>
-                              <button 
-                                onClick={() => setActiveCategory('donate')}
-                                className="w-full py-3 bg-accent text-white rounded-xl font-black uppercase tracking-widest text-xs hover:bg-accent/90 transition-colors"
-                              >
-                                Donate Now
-                              </button>
-                            </div>
                           </div>
                         </div>
 
