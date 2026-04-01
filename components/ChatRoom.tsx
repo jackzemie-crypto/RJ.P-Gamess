@@ -160,15 +160,13 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ collectionName = 'chat', isAdmin = 
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
-            placeholder={auth.currentUser ? "Type a message..." : "You must be logged in to chat"}
-            disabled={!auth.currentUser}
-            className="flex-1 bg-white/5 border border-white/5 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-accent disabled:opacity-50 disabled:cursor-not-allowed"
+            placeholder="Type a message..."
+            className="flex-1 bg-white/5 border border-white/5 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-accent"
           />
           <button 
             type="button"
             onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-            disabled={!auth.currentUser}
-            className="p-2 bg-white/5 rounded-xl text-neutral-400 hover:text-white transition-colors border border-white/5 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-2 bg-white/5 rounded-xl text-neutral-400 hover:text-white transition-colors border border-white/5"
           >
             <Smile size={18} />
           </button>
@@ -199,7 +197,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ collectionName = 'chat', isAdmin = 
             )}
           </AnimatePresence>
         </div>
-        <button type="submit" disabled={!auth.currentUser} className="p-2 bg-accent rounded-xl text-white hover:bg-accent/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+        <button type="submit" className="p-2 bg-accent rounded-xl text-white hover:bg-accent/90 transition-colors">
           <Send size={18} />
         </button>
       </form>
