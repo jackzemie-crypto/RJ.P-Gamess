@@ -178,10 +178,6 @@ const App: React.FC = () => {
       setIsAuthReady(true);
       if (currentUser) {
         setIsAuthModalOpen(false);
-      } else {
-        setIsAuthModalOpen(true);
-        setFavorites([]);
-        localStorage.removeItem('rjpgames_favorites');
       }
     });
     return () => unsubscribe();
