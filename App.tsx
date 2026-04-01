@@ -169,11 +169,16 @@ const App: React.FC = () => {
   const [isAuthReady, setIsAuthReady] = useState(false);
   const { t } = useLanguage();
 
+  // Debug auth modal state
+  useEffect(() => {
+    console.log('Auth modal state changed:', isAuthModalOpen);
+  }, [isAuthModalOpen]);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       console.log("Auth state changed:", currentUser?.email);
       setUser(currentUser);
-      setIsAdmin(currentUser?.email === 'darkfn1234567890@gmail.com' || currentUser?.email === 'whitecaleb888@gmail.com' || currentUser?.email === 'calebwhite2@chisd.net' || currentUser?.email === 'lily.smith7406@gmail.com')
+      setIsAdmin(currentUser?.email === 'darkfn1234567890@gmail.com' || currentUser?.email === 'whitecaleb888@gmail.com' || currentUser?.email === 'calebwhite2@chisd.net' || currentUser?.email === 'lily.smith7406@gmail.com' || currentUser?.email === 'pcidiagnosticbus@gmail.com')
       setIsSuperAdmin(currentUser?.email === 'darkfn1234567890@gmail.com' || currentUser?.email === 'whitecaleb888@gmail.com')
       setIsAuthReady(true);
       if (currentUser) {
@@ -228,7 +233,7 @@ const App: React.FC = () => {
         }
         
         // Update admin status based on role in database
-        const isAppOwner = user.email === 'darkfn1234567890@gmail.com' || user.email === 'whitecaleb888@gmail.com' || user.email === 'calebwhite2@chisd.net' || user.email === 'lily.smith7406@gmail.com';
+        const isAppOwner = user.email === 'darkfn1234567890@gmail.com' || user.email === 'whitecaleb888@gmail.com' || user.email === 'calebwhite2@chisd.net' || user.email === 'lily.smith7406@gmail.com' || user.email === 'pcidiagnosticbus@gmail.com';
         const isSuperOwner = user.email === 'darkfn1234567890@gmail.com' || user.email === 'whitecaleb888@gmail.com';
         setIsAdmin(isAppOwner || data.role === 'admin');
         setIsSuperAdmin(isSuperOwner);
@@ -519,7 +524,15 @@ const App: React.FC = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={user ? logout : () => setIsAuthModalOpen(true)}
+                onClick={() => {
+                  console.log('Login button clicked, current user:', user);
+                  if (user) {
+                    logout();
+                  } else {
+                    console.log('Opening auth modal');
+                    setIsAuthModalOpen(true);
+                  }
+                }}
                 className="w-10 h-10 flex items-center justify-center rounded-xl bg-surface-hover border border-white/5 text-text-secondary hover:text-white hover:border-white/20 transition-all duration-300"
                 title={user ? "Logout" : "Login / Sign Up"}
               >
