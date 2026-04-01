@@ -9,6 +9,16 @@ interface UpdateLogProps {
 
 const UPDATES = [
   {
+    version: "1.3.0",
+    date: "2026-04-01",
+    changes: [
+      "Added Admin Dashboard (for admins only)",
+      "Added Chatroom and admin chatroom",
+      "Fixed Music Player",
+      "Added Suggestion Bin"
+    ]
+  },
+  {
     version: "",
     date: "2026-03-26",
     changes: ["JJK Episode 11 and 12 have been added"]
