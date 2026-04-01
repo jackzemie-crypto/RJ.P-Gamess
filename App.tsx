@@ -210,7 +210,7 @@ const App: React.FC = () => {
           // Apply theme
           const savedThemes = localStorage.getItem('custom_themes');
           const customThemes = savedThemes ? JSON.parse(savedThemes) : { ...defaultThemes };
-          const activeTheme = customThemes[data.theme] || defaultThemes.chillzone;
+          const activeTheme = customThemes[data.theme] || defaultThemes.rjpgames;
           
           const root = document.documentElement;
           root.style.setProperty('--bg', activeTheme.colors.bg);
@@ -249,7 +249,7 @@ const App: React.FC = () => {
     if (savedLogo) setCustomLogo(savedLogo);
     
     // Load custom theme
-    const currentThemeId = localStorage.getItem('custom_theme_id') || 'chillzone';
+    const currentThemeId = localStorage.getItem('custom_theme_id') || 'rjpgames';
     const savedThemes = localStorage.getItem('custom_themes');
     const customThemes = savedThemes ? JSON.parse(savedThemes) : { ...defaultThemes };
     
@@ -260,7 +260,7 @@ const App: React.FC = () => {
       }
     });
 
-    const activeTheme = customThemes[currentThemeId] || defaultThemes.chillzone;
+    const activeTheme = customThemes[currentThemeId] || defaultThemes.rjpgames;
     
     const root = document.documentElement;
     root.style.setProperty('--bg', activeTheme.colors.bg);
