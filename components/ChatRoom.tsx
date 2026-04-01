@@ -45,18 +45,31 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ collectionName = 'chat', isAdmin = 
 
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim() || !auth.currentUser) return;
+    if (!newMessage.trim() || !auth.currentUser) {
+      console.log('ChatRoom: Cannot send message - empty message or no user');
+      return;
+    }
 
-    await addDoc(collection(db, collectionName), {
-      text: newMessage,
-      createdAt: serverTimestamp(),
-      uid: auth.currentUser.uid,
-      displayName: auth.currentUser.displayName || 'Anonymous',
-      role: isSuperAdmin ? 'super-admin' : (isAdmin ? 'admin' : 'user'),
-      replyTo: replyTo ? { id: replyTo.id, text: replyTo.text, displayName: replyTo.displayName } : null,
-    });
-    setNewMessage('');
-    setReplyTo(null);
+    try {
+      console.log('ChatRoom: Sending message to collection:', collectionName);
+      console.log('ChatRoom: User:', auth.currentUser.email, 'isAdmin:', isAdmin, 'isSuperAdmin:', isSuperAdmin);
+      
+      await addDoc(collection(db, collectionName), {
+        text: newMessage,
+        createdAt: serverTimestamp(),
+        uid: auth.currentUser.uid,
+        displayName: auth.currentUser.displayName || 'Anonymous',
+        role: isSuperAdmin ? 'super-admin' : (isAdmin ? 'admin' : 'user'),
+        replyTo: replyTo ? { id: replyTo.id, text: replyTo.text, displayName: replyTo.displayName } : null,
+      });
+      
+      console.log('ChatRoom: Message sent successfully');
+      setNewMessage('');
+      setReplyTo(null);
+    } catch (error) {
+      console.error('ChatRoom: Error sending message:', error);
+      alert(`Failed to send message: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   };
 
   const deleteMessage = async (id: string) => {

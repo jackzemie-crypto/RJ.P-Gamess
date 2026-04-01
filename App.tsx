@@ -843,7 +843,7 @@ const App: React.FC = () => {
                           className="text-center mb-16"
                         >
                           <h1 className="text-7xl font-black italic uppercase tracking-tighter text-white mb-4">Staff Lounge</h1>
-                          <p className="text-text-secondary max-w-2xl mx-auto font-medium">Private discussion area for ChillZone staff members. Coordinate updates and manage the site.</p>
+                          <p className="text-text-secondary max-w-2xl mx-auto font-medium">Private discussion area for RJ.P Games staff members. Coordinate updates and manage the site.</p>
                         </motion.div>
                         
                         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 relative z-10">
