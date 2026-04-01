@@ -10,13 +10,8 @@ interface UpdateLogProps {
 const UPDATES = [
   {
     version: "1.3.0",
-    date: "2026-04-01",
-    changes: [
-      "Added Admin Dashboard (for admins only)",
-      "Added Chatroom and admin chatroom",
-      "Fixed Music Player",
-      "Added Suggestion Bin"
-    ]
+    date: "2026-03-30",
+    changes: ["New Theme Added- April Fools Theme 🤡", "New Theme Added- Halloween Theme 🎃"]
   },
   {
     version: "",
