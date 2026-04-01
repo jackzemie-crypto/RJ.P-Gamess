@@ -47,27 +47,37 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ collectionName = 'chat', isAdmin = 
     e.preventDefault();
     if (!newMessage.trim() || !auth.currentUser) {
       console.log('ChatRoom: Cannot send message - empty message or no user');
+      console.log('ChatRoom: newMessage:', newMessage);
+      console.log('ChatRoom: auth.currentUser:', auth.currentUser);
       return;
     }
 
     try {
       console.log('ChatRoom: Sending message to collection:', collectionName);
       console.log('ChatRoom: User:', auth.currentUser.email, 'isAdmin:', isAdmin, 'isSuperAdmin:', isSuperAdmin);
+      console.log('ChatRoom: User UID:', auth.currentUser.uid);
+      console.log('ChatRoom: User displayName:', auth.currentUser.displayName);
+      console.log('ChatRoom: Email verified:', auth.currentUser.emailVerified);
       
-      await addDoc(collection(db, collectionName), {
+      const messageData = {
         text: newMessage,
         createdAt: serverTimestamp(),
         uid: auth.currentUser.uid,
         displayName: auth.currentUser.displayName || 'Anonymous',
         role: isSuperAdmin ? 'super-admin' : (isAdmin ? 'admin' : 'user'),
         replyTo: replyTo ? { id: replyTo.id, text: replyTo.text, displayName: replyTo.displayName } : null,
-      });
+      };
+      
+      console.log('ChatRoom: Message data:', messageData);
+      
+      await addDoc(collection(db, collectionName), messageData);
       
       console.log('ChatRoom: Message sent successfully');
       setNewMessage('');
       setReplyTo(null);
     } catch (error) {
       console.error('ChatRoom: Error sending message:', error);
+      console.error('ChatRoom: Error details:', JSON.stringify(error, null, 2));
       alert(`Failed to send message: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
@@ -102,6 +112,16 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ collectionName = 'chat', isAdmin = 
             <h2 className="text-lg font-black italic uppercase tracking-tighter text-white">{collectionName === 'admin_chat' ? 'Staff Lounge' : 'Public Chat'}</h2>
             <p className="text-[10px] text-text-secondary font-bold uppercase tracking-widest">Live Community Discussion</p>
           </div>
+        </div>
+        {/* Debug info */}
+        <div className="text-[10px] text-text-secondary">
+          {auth.currentUser && (
+            <div className="text-right">
+              <div>User: {auth.currentUser.email}</div>
+              <div>Admin: {isAdmin ? '✓' : '✗'} | Super: {isSuperAdmin ? '✓' : '✗'}</div>
+              <div>Verified: {auth.currentUser.emailVerified ? '✓' : '✗'}</div>
+            </div>
+          )}
         </div>
       </div>
       <div className="flex-1 overflow-y-auto space-y-4 mb-4 custom-scrollbar">
