@@ -650,7 +650,7 @@ const App: React.FC = () => {
                             {t('Devs')}
                           </h1>
                           <p className="text-text-muted text-lg font-medium max-w-2xl mx-auto">
-                            {t('The team behind ChillZone.')} <span className="text-accent font-bold">{t('Click on our cards')}</span> {t('to visit our personal sites and socials!')}
+                            {t('The team behind RJ.P Games.')} <span className="text-accent font-bold">{t('Click on our cards')}</span> {t('to visit our personal sites and socials!')}
                           </p>
                         </div>
                         <section>
@@ -792,7 +792,7 @@ const App: React.FC = () => {
                           className="text-center mb-16"
                         >
                           <h1 className="text-7xl font-black italic uppercase tracking-tighter text-white mb-4">Community Chat</h1>
-                          <p className="text-text-secondary max-w-2xl mx-auto font-medium">Connect with other members of ChillZone. Share your thoughts, request content, and hang out with the community.</p>
+                          <p className="text-text-secondary max-w-2xl mx-auto font-medium">Connect with other members of RJ.P Games. Share your thoughts, request content, and hang out with the community.</p>
                         </motion.div>
                         
                         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 relative z-10">
