@@ -105,18 +105,6 @@ const Sidebar: React.FC<SidebarProps> = ({ activeCategory, onSelect, logoUrl, on
                 }`}>
                   <Icon size={22} />
                 </div>
-                <AnimatePresence>
-                  {isHovered && (
-                    <motion.span 
-                      initial={{ opacity: 0, x: -5 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -5 }}
-                      className="text-[10px] font-black uppercase tracking-[0.2em] italic"
-                    >
-                      {t(item.label)}
-                    </motion.span>
-                  )}
-                </AnimatePresence>
               </button>
             );
           })}
