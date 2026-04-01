@@ -173,7 +173,7 @@ const App: React.FC = () => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       console.log("Auth state changed:", currentUser?.email);
       setUser(currentUser);
-      setIsAdmin(currentUser?.email === 'darkfn1234567890@gmail.com' || currentUser?.email === 'whitecaleb888@gmail.com' || currentUser?.email === 'calebwhite2@chisd.net')
+      setIsAdmin(currentUser?.email === 'darkfn1234567890@gmail.com' || currentUser?.email === 'whitecaleb888@gmail.com' || currentUser?.email === 'calebwhite2@chisd.net' || currentUser?.email === 'lily.smith7406@gmail.com')
       setIsSuperAdmin(currentUser?.email === 'darkfn1234567890@gmail.com' || currentUser?.email === 'whitecaleb888@gmail.com')
       setIsAuthReady(true);
       if (currentUser) {
@@ -232,7 +232,7 @@ const App: React.FC = () => {
         }
         
         // Update admin status based on role in database
-        const isAppOwner = user.email === 'darkfn1234567890@gmail.com' || user.email === 'whitecaleb888@gmail.com' || user.email === 'calebwhite2@chisd.net';
+        const isAppOwner = user.email === 'darkfn1234567890@gmail.com' || user.email === 'whitecaleb888@gmail.com' || user.email === 'calebwhite2@chisd.net' || user.email === 'lily.smith7406@gmail.com';
         const isSuperOwner = user.email === 'darkfn1234567890@gmail.com' || user.email === 'whitecaleb888@gmail.com';
         setIsAdmin(isAppOwner || data.role === 'admin');
         setIsSuperAdmin(isSuperOwner);
@@ -533,7 +533,7 @@ const App: React.FC = () => {
               <motion.a 
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                href="http://discord.gg/cuHARsXESW" 
+                href="https://discord.gg/8Xw3PtCHUz" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="w-10 h-10 flex items-center justify-center rounded-xl bg-surface-hover border border-white/5 text-text-secondary hover:text-[#5865F2] hover:border-[#5865F2]/50 transition-all duration-300 relative"
