@@ -848,7 +848,21 @@ const App: React.FC = () => {
                         
                         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 relative z-10">
                           <div className="lg:col-span-3">
-                            {isAdmin ? <ChatRoom collectionName="admin_chat" isAdmin={isAdmin} isSuperAdmin={isSuperAdmin} /> : <div className="text-center py-20 text-text-muted">Authorized personnel only.</div>}
+                            {!user ? (
+                              <div className="text-center py-20">
+                                <p className="text-text-muted mb-4">You must be logged in to access the staff lounge.</p>
+                                <button 
+                                  onClick={() => setIsAuthModalOpen(true)}
+                                  className="px-6 py-3 bg-accent rounded-xl text-white font-bold hover:bg-accent/80 transition-colors"
+                                >
+                                  Sign In
+                                </button>
+                              </div>
+                            ) : isAdmin ? (
+                              <ChatRoom collectionName="admin_chat" isAdmin={isAdmin} isSuperAdmin={isSuperAdmin} />
+                            ) : (
+                              <div className="text-center py-20 text-text-muted">Authorized personnel only.</div>
+                            )}
                           </div>
                           <div className="space-y-6">
                             <div className="bg-surface border border-white/5 rounded-2xl p-6 shadow-xl">
