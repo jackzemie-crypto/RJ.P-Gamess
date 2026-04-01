@@ -103,6 +103,9 @@ const Sidebar: React.FC<SidebarProps> = ({ activeCategory, onSelect, logoUrl, on
                 }`}>
                   <Icon size={22} />
                 </div>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] italic">
+                  {t(item.label)}
+                </span>
               </button>
             );
           })}
