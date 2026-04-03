@@ -66,10 +66,18 @@ export function GamesHub() {
           : `<div class="w-full h-full rounded-lg bg-surface-800 flex items-center justify-center"><p class="text-text-500">No Image</p></div>`;
 
         return `
-          <div class="group relative inline-block w-64 h-40 m-2 overflow-hidden rounded-xl border border-overlay bg-bg shadow-sm cursor-pointer" onclick="window.showGameOptions('${gme.file_name}', '${gme.title}', '${gme.frame}')">
-            ${thumb_html}
-            <div class="absolute inset-0 flex flex-col items-center justify-center p-3 bg-black bg-opacity-50 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-              <h3 class="text-white text-lg font-bold text-center">${gme.title}</h3>
+          <div class="group relative inline-block w-64 h-40 m-2 overflow-hidden rounded-xl border border-overlay bg-bg shadow-sm">
+            <div onclick="window.opengme('${gme.file_name}', '${gme.title}', '${gme.frame}')" class="cursor-pointer w-full h-full">
+              ${thumb_html}
+            </div>
+            <div class="absolute inset-0 flex flex-col items-start justify-between p-3 bg-black bg-opacity-50 opacity-0 transition-opacity duration-300 group-hover:opacity-100 pointer-events-none">
+              <h3 class="text-white text-lg font-bold p-2">${gme.title}</h3>
+              <button 
+                onclick="event.stopPropagation(); window.opengmeBlank('${gme.file_name}', '${gme.title}', '${gme.frame}')"
+                class="pointer-events-auto px-3 py-1.5 bg-accent text-white text-xs font-bold uppercase rounded-lg hover:bg-accent/80 transition-all"
+              >
+                Open in about:blank
+              </button>
             </div>
           </div>
         `;
@@ -147,34 +155,6 @@ export function GamesHub() {
       });
 
       initInfiniteScroll();
-
-      // --- Show Game Options Modal ---
-      (window as any).showGameOptions = (file_name: string, title: string, frameGme: string) => {
-        const modal = document.getElementById("gameOptionsModal");
-        const modalTitle = document.getElementById("gameOptionsTitle");
-        const playBtn = document.getElementById("playGameBtn");
-        const playBlankBtn = document.getElementById("playBlankBtn");
-        
-        if (!modal || !modalTitle || !playBtn || !playBlankBtn) return;
-        
-        modalTitle.textContent = title;
-        modal.classList.remove("hidden");
-        
-        playBtn.onclick = () => {
-          modal.classList.add("hidden");
-          (window as any).opengme(file_name, title, frameGme);
-        };
-        
-        playBlankBtn.onclick = () => {
-          modal.classList.add("hidden");
-          (window as any).opengmeBlank(file_name, title, frameGme);
-        };
-      };
-
-      (window as any).closeGameOptions = () => {
-        const modal = document.getElementById("gameOptionsModal");
-        if (modal) modal.classList.add("hidden");
-      };
 
       // --- Frame Logic ---
       (window as any).opengme = async (file_name: string, title: string, frameGme: string) => {
@@ -289,9 +269,7 @@ export function GamesHub() {
 
       const backBtn = document.getElementById("backBtn");
       const fullscreenBtn = document.getElementById("fullscreenBtn");
-      const exitGameBtn = document.getElementById("exitGameBtn");
       if (backBtn) backBtn.addEventListener("click", (window as any).closegme);
-      if (exitGameBtn) exitGameBtn.addEventListener("click", (window as any).closegme);
       if (fullscreenBtn) fullscreenBtn.addEventListener("click", () => {
         const frame = document.getElementById("gmePageFrame");
         if (frame) frame.requestFullscreen();
@@ -321,43 +299,13 @@ export function GamesHub() {
         <input id="search" className="w-full p-4 mb-4 bg-white/5 border border-white/10 text-white rounded-2xl" placeholder="Search..." />
         <div id="gmeContainer"></div>
         
-        {/* Game Options Modal */}
-        <div id="gameOptionsModal" className="hidden fixed inset-0 z-[300] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#0a0a0a] border border-white/10 rounded-3xl p-8 max-w-md w-full shadow-2xl">
-            <h2 id="gameOptionsTitle" className="text-white text-2xl font-bold mb-6 text-center"></h2>
-            <div className="flex flex-col gap-3">
-              <button 
-                id="playGameBtn"
-                style={{padding: '14px 20px', backgroundColor: '#6366f1', border: '1px solid rgba(99,102,241,0.3)', color: '#ffffff', fontWeight: 'bold', textTransform: 'uppercase', borderRadius: '12px', cursor: 'pointer', fontSize: '14px', width: '100%'}}
-              >
-                Play Game
-              </button>
-              <button 
-                id="playBlankBtn"
-                style={{padding: '14px 20px', backgroundColor: '#8b5cf6', border: '1px solid rgba(139,92,246,0.3)', color: '#ffffff', fontWeight: 'bold', textTransform: 'uppercase', borderRadius: '12px', cursor: 'pointer', fontSize: '14px', width: '100%'}}
-              >
-                Open in about:blank
-              </button>
-              <button 
-                onclick="window.closeGameOptions()"
-                style={{padding: '14px 20px', backgroundColor: '#1a1a1a', border: '1px solid rgba(255,255,255,0.1)', color: '#ffffff', fontWeight: 'bold', textTransform: 'uppercase', borderRadius: '12px', cursor: 'pointer', fontSize: '14px', width: '100%'}}
-              >
-                Cancel
-              </button>
-            </div>
+        <div id="gmePageContainer" className="hidden fixed inset-0 z-[200] bg-black flex flex-col">
+          <div className="flex justify-between p-4 bg-black/80">
+            <button id="backBtn" className="text-white font-bold uppercase">Back</button>
+            <h1 id="gmePageTitle" className="text-white font-bold"></h1>
+            <button id="fullscreenBtn" className="text-white font-bold uppercase">Fullscreen</button>
           </div>
-        </div>
-        
-        <div id="gmePageContainer" className="hidden fixed inset-0 z-[200] bg-black">
-          <div style={{position: 'absolute', top: 0, left: 0, right: 0, zIndex: 9999, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', backgroundColor: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)'}}>
-            <button id="backBtn" style={{padding: '10px 16px', backgroundColor: '#1a1a1a', border: '1px solid rgba(255,255,255,0.2)', color: '#ffffff', fontWeight: 'bold', textTransform: 'uppercase', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', boxShadow: '0 2px 8px rgba(0,0,0,0.5)'}}>Back</button>
-            <h1 id="gmePageTitle" style={{color: '#ffffff', fontWeight: 'bold', fontSize: '20px', margin: 0, textShadow: '0 2px 4px rgba(0,0,0,0.8)'}}></h1>
-            <div style={{display: 'flex', gap: '8px'}}>
-              <button id="fullscreenBtn" style={{padding: '10px 16px', backgroundColor: '#6366f1', border: '1px solid rgba(99,102,241,0.3)', color: '#ffffff', fontWeight: 'bold', textTransform: 'uppercase', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', boxShadow: '0 2px 8px rgba(0,0,0,0.5)'}}>Fullscreen</button>
-              <button id="exitGameBtn" style={{padding: '10px 16px', backgroundColor: '#ef4444', border: '1px solid rgba(239,68,68,0.3)', color: '#ffffff', fontWeight: 'bold', textTransform: 'uppercase', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', boxShadow: '0 2px 8px rgba(0,0,0,0.5)'}}>Exit Game</button>
-            </div>
-          </div>
-          <iframe id="gmePageFrame" style={{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none'}} />
+          <iframe id="gmePageFrame" className="w-full h-full border-none" />
         </div>
       </div>
     </motion.div>
