@@ -876,6 +876,12 @@ export const PARTNERS_DATA: PartnerItem[] = [
     owner: "RJ.P", 
     url: "https://rj-p-gamess.vercel.app/",
     avatar: "https://files.catbox.moe/5mijpj.png"
+  },
+  {
+    name: "RJ.P Games Discord",
+    owner: "RJ.P",
+    url: "https://discord.gg/XAsZ5UVGV4",
+    avatar: "https://files.catbox.moe/5mijpj.png"
   }
 ];
 
