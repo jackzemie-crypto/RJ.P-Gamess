@@ -376,6 +376,12 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
   const activeTheme = customThemes[currentThemeId] || defaultThemes.chillzone;
 
   useEffect(() => {
+    // Safety check for theme colors
+    if (!activeTheme || !activeTheme.colors) {
+      console.error('Invalid theme detected, using default');
+      return;
+    }
+
     const root = document.documentElement;
     root.style.setProperty('--bg', activeTheme.colors.bg);
     root.style.setProperty('--text-primary', activeTheme.colors.textPrimary);
@@ -492,7 +498,7 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
   return (
     <div className="relative bg-bg text-text-primary font-sans flex flex-col min-h-[400px]">
       <div className="absolute inset-0 z-0 overflow-hidden rounded-2xl">
-        <ParticleBackground color={activeTheme.colors.accent} />
+        {activeTheme && activeTheme.colors && <ParticleBackground color={activeTheme.colors.accent} />}
       </div>
       
       {/* Top Navigation */}
@@ -570,19 +576,20 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
                   <h3 className="font-medium text-sm mb-2">{t('Theme Name')}</h3>
                   <input 
                     type="text" 
-                    value={activeTheme.name}
+                    value={activeTheme?.name || ''}
                     onChange={(e) => handleNameChange(e.target.value)}
                     className="w-full bg-surface border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-accent transition-colors mb-1 text-text-primary"
                   />
                 </div>
 
                 {/* Colors Grid */}
+                {activeTheme && activeTheme.colors && (
                 <div className="grid grid-cols-2 gap-4">
                   <ColorPickerItem 
                     label={t('Background')} 
                     colorKey="bg" 
                     value={activeTheme.colors.bg} 
-                    isCustom={activeTheme.colors.bg !== defaultThemes[currentThemeId].colors.bg}
+                    isCustom={activeTheme.colors.bg !== defaultThemes[currentThemeId]?.colors?.bg}
                     onChange={handleColorChange} 
                     t={t}
                   />
@@ -590,7 +597,7 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
                     label={t('Foreground')} 
                     colorKey="textPrimary" 
                     value={activeTheme.colors.textPrimary} 
-                    isCustom={activeTheme.colors.textPrimary !== defaultThemes[currentThemeId].colors.textPrimary}
+                    isCustom={activeTheme.colors.textPrimary !== defaultThemes[currentThemeId]?.colors?.textPrimary}
                     onChange={handleColorChange} 
                     t={t}
                   />
@@ -598,7 +605,7 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
                     label={t('Card')} 
                     colorKey="surface" 
                     value={activeTheme.colors.surface} 
-                    isCustom={activeTheme.colors.surface !== defaultThemes[currentThemeId].colors.surface}
+                    isCustom={activeTheme.colors.surface !== defaultThemes[currentThemeId]?.colors?.surface}
                     onChange={handleColorChange} 
                     t={t}
                   />
@@ -606,7 +613,7 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
                     label={t('Border')} 
                     colorKey="border" 
                     value={activeTheme.colors.border} 
-                    isCustom={activeTheme.colors.border !== defaultThemes[currentThemeId].colors.border}
+                    isCustom={activeTheme.colors.border !== defaultThemes[currentThemeId]?.colors?.border}
                     onChange={handleColorChange} 
                     t={t}
                   />
@@ -614,7 +621,7 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
                     label={t('Primary')} 
                     colorKey="accent" 
                     value={activeTheme.colors.accent} 
-                    isCustom={activeTheme.colors.accent !== defaultThemes[currentThemeId].colors.accent}
+                    isCustom={activeTheme.colors.accent !== defaultThemes[currentThemeId]?.colors?.accent}
                     onChange={handleColorChange} 
                     t={t}
                   />
@@ -622,11 +629,12 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
                     label={t('Accent')} 
                     colorKey="surfaceHover" 
                     value={activeTheme.colors.surfaceHover} 
-                    isCustom={activeTheme.colors.surfaceHover !== defaultThemes[currentThemeId].colors.surfaceHover}
+                    isCustom={activeTheme.colors.surfaceHover !== defaultThemes[currentThemeId]?.colors?.surfaceHover}
                     onChange={handleColorChange} 
                     t={t}
                   />
                 </div>
+                )}
 
                 {/* Footer */}
                 <div className="flex items-center justify-between pt-4 border-t border-border">
