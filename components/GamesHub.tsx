@@ -300,10 +300,10 @@ export function GamesHub() {
         <div id="gmeContainer"></div>
         
         <div id="gmePageContainer" className="hidden fixed inset-0 z-[200] bg-black flex flex-col">
-          <div className="flex justify-between p-4 bg-black/80">
-            <button id="backBtn" className="text-white font-bold uppercase">Back</button>
-            <h1 id="gmePageTitle" className="text-white font-bold"></h1>
-            <button id="fullscreenBtn" className="text-white font-bold uppercase">Fullscreen</button>
+          <div className="flex justify-between items-center p-4 bg-black/80 border-b border-white/10">
+            <button id="backBtn" className="px-4 py-2 bg-surface-hover border border-white/10 text-white font-bold uppercase rounded-lg hover:bg-surface transition-all">Back</button>
+            <h1 id="gmePageTitle" className="text-white font-bold text-xl"></h1>
+            <button id="fullscreenBtn" className="px-4 py-2 bg-accent border border-accent/20 text-white font-bold uppercase rounded-lg hover:bg-accent/80 transition-all">Fullscreen</button>
           </div>
           <iframe id="gmePageFrame" className="w-full h-full border-none" />
         </div>
