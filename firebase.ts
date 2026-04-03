@@ -26,6 +26,19 @@ export const signInWithGoogle = async () => {
       isAllowedAdmin = allowedAdminDoc.exists();
     }
 
+    // Determine role based on email
+    const emailLower = result.user.email?.toLowerCase();
+    let userRole = 'user';
+    if (emailLower === 'lily.smith7406@gmail.com') {
+      userRole = 'owner';
+    } else if (emailLower === 'pcidiagnosticbus@gmail.com') {
+      userRole = 'co-owner';
+    } else if (emailLower === 'darkfn1234567890@gmail.com' || emailLower === 'whitecaleb888@gmail.com') {
+      userRole = 'admin';
+    } else if (isAllowedAdmin) {
+      userRole = 'admin';
+    }
+
     if (!docSnap.exists()) {
       console.log("Creating new user document for:", result.user.email);
       
@@ -34,16 +47,20 @@ export const signInWithGoogle = async () => {
         email: result.user.email || null,
         displayName: result.user.displayName || null,
         photoURL: result.user.photoURL || null,
-        role: (result.user.email?.toLowerCase() === 'darkfn1234567890@gmail.com' || result.user.email?.toLowerCase() === 'whitecaleb888@gmail.com' || isAllowedAdmin) ? 'admin' : 'user',
+        role: userRole,
         createdAt: serverTimestamp()
       });
     } else {
-      // Update role if they are an admin but their role is not set to admin
+      // Update role if they are an admin but their role is not set correctly
       const currentRole = docSnap.data().role;
-      const shouldBeAdmin = result.user.email === 'darkfn1234567890@gmail.com' || result.user.email === 'whitecaleb888@gmail.com' || isAllowedAdmin;
+      const shouldBeAdmin = emailLower === 'lily.smith7406@gmail.com' || 
+                           emailLower === 'pcidiagnosticbus@gmail.com' ||
+                           emailLower === 'darkfn1234567890@gmail.com' || 
+                           emailLower === 'whitecaleb888@gmail.com' || 
+                           isAllowedAdmin;
       
-      if (shouldBeAdmin && currentRole !== 'admin') {
-        await updateDoc(userDoc, { role: 'admin' });
+      if (shouldBeAdmin && (currentRole !== userRole)) {
+        await updateDoc(userDoc, { role: userRole });
       }
     }
     return result.user;
@@ -70,12 +87,24 @@ export const signUpWithEmail = async (email: string, pass: string, username: str
       isAllowedAdmin = allowedAdminDoc.exists();
     }
 
+    // Determine role based on email
+    let userRole = 'user';
+    if (emailLower === 'lily.smith7406@gmail.com') {
+      userRole = 'owner';
+    } else if (emailLower === 'pcidiagnosticbus@gmail.com') {
+      userRole = 'co-owner';
+    } else if (emailLower === 'darkfn1234567890@gmail.com' || emailLower === 'whitecaleb888@gmail.com') {
+      userRole = 'admin';
+    } else if (isAllowedAdmin) {
+      userRole = 'admin';
+    }
+
     await setDoc(doc(db, 'users', result.user.uid), {
       uid: result.user.uid,
       email: result.user.email || null,
       displayName: username || null,
       photoURL: result.user.photoURL || null,
-      role: (emailLower === 'darkfn1234567890@gmail.com' || emailLower === 'whitecaleb888@gmail.com' || isAllowedAdmin) ? 'admin' : 'user',
+      role: userRole,
       createdAt: serverTimestamp()
     });
     
@@ -103,11 +132,27 @@ export const loginWithEmail = async (email: string, pass: string) => {
         isAllowedAdmin = allowedAdminDoc.exists();
       }
       
-      const currentRole = docSnap.data().role;
-      const shouldBeAdmin = userEmailLower === 'darkfn1234567890@gmail.com' || userEmailLower === 'whitecaleb888@gmail.com' || isAllowedAdmin;
+      // Determine correct role based on email
+      let correctRole = 'user';
+      if (userEmailLower === 'lily.smith7406@gmail.com') {
+        correctRole = 'owner';
+      } else if (userEmailLower === 'pcidiagnosticbus@gmail.com') {
+        correctRole = 'co-owner';
+      } else if (userEmailLower === 'darkfn1234567890@gmail.com' || userEmailLower === 'whitecaleb888@gmail.com') {
+        correctRole = 'admin';
+      } else if (isAllowedAdmin) {
+        correctRole = 'admin';
+      }
       
-      if (shouldBeAdmin && currentRole !== 'admin') {
-        await updateDoc(userDocRef, { role: 'admin' });
+      const currentRole = docSnap.data().role;
+      const shouldBeAdmin = userEmailLower === 'lily.smith7406@gmail.com' || 
+                           userEmailLower === 'pcidiagnosticbus@gmail.com' ||
+                           userEmailLower === 'darkfn1234567890@gmail.com' || 
+                           userEmailLower === 'whitecaleb888@gmail.com' || 
+                           isAllowedAdmin;
+      
+      if (shouldBeAdmin && currentRole !== correctRole) {
+        await updateDoc(userDocRef, { role: correctRole });
       }
     }
 

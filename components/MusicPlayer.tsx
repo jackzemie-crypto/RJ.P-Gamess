@@ -11,7 +11,7 @@ const MusicPlayer: React.FC = () => {
       className="w-full flex-1 min-h-[calc(100vh-80px)] flex flex-col"
     >
       <iframe 
-        src="https://rj-p-gamess.vercel.app" 
+        src="https://monochrome.tf/" 
         className="w-full flex-1 border-none"
         allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
         title="RJ.P Games Music Player"
