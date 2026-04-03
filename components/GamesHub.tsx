@@ -84,6 +84,10 @@ const iconMap: Record<string, any> = {
   "fa-feather": Leaf,
   "fa-bottle-water": Beer,
   "fa-laptop": Box,
+  "fa-snake": Ghost,
+  "fa-table-tennis-paddle-ball": Target,
+  "fa-rocket": Rocket,
+  "fa-brick-wall": Box,
 };
 
 interface GameCardProps {

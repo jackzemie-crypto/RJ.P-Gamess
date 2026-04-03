@@ -10,6 +10,7 @@ export interface Game {
   iconColor: string;
   image: string;
   link?: string;
+  url?: string; // For HTML games
 }
 
 export interface FavoriteItem {
@@ -62,7 +63,7 @@ export interface ProxyItem {
   name?: string;
 }
 
-export type Category = 'home' | 'movies' | 'tv shows' | 'anime' | 'manga' | 'proxies' | 'partners' | 'dev' | 'support' | 'apps' | 'browser' | 'settings' | 'music' | 'games';
+export type Category = 'home' | 'movies' | 'tv shows' | 'anime' | 'manga' | 'proxies' | 'partners' | 'dev' | 'support' | 'donate' | 'apps' | 'browser' | 'settings' | 'music' | 'games';
 
 export interface Anime {
   title: string;
