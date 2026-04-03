@@ -196,35 +196,67 @@ export function GamesHub() {
 
       // --- Open in about:blank ---
       (window as any).opengmeBlank = async (file_name: string, title: string, frameGme: string) => {
-        const gameUrl = frameGme === "true" 
-          ? `https://raw.githack.com/Hydra-Network/hydra-assets/main/gmes/${file_name}`
-          : `https://raw.githubusercontent.com/Hydra-Network/hydra-assets/main/gmes/${file_name}`;
-        
         const aboutBlankWindow = window.open('about:blank', '_blank');
         if (!aboutBlankWindow) {
           alert('Popup blocked! Please allow popups for this site.');
           return;
         }
 
-        const html = `
-          <!DOCTYPE html>
-          <html>
-            <head>
-              <title>${title}</title>
-              <style>
-                body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
-                iframe { border: none; width: 100%; height: 100%; }
-              </style>
-            </head>
-            <body>
-              <iframe src="${gameUrl}" allowfullscreen></iframe>
-            </body>
-          </html>
-        `;
-
-        aboutBlankWindow.document.open();
-        aboutBlankWindow.document.write(html);
-        aboutBlankWindow.document.close();
+        if (frameGme === "true") {
+          // For framed games, use raw.githack.com directly
+          const gameUrl = `https://raw.githack.com/Hydra-Network/hydra-assets/main/gmes/${file_name}`;
+          const html = `
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <title>${title}</title>
+                <style>
+                  body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
+                  iframe { border: none; width: 100%; height: 100%; }
+                </style>
+              </head>
+              <body>
+                <iframe src="${gameUrl}" allowfullscreen></iframe>
+              </body>
+            </html>
+          `;
+          aboutBlankWindow.document.open();
+          aboutBlankWindow.document.write(html);
+          aboutBlankWindow.document.close();
+        } else {
+          // For non-framed games, fetch and inject the HTML directly
+          try {
+            const response = await fetch(`https://raw.githubusercontent.com/Hydra-Network/hydra-assets/main/gmes/${file_name}`);
+            const gameHtml = await response.text();
+            
+            aboutBlankWindow.document.open();
+            aboutBlankWindow.document.write(gameHtml);
+            aboutBlankWindow.document.close();
+            
+            // Re-execute scripts
+            aboutBlankWindow.document.querySelectorAll('script').forEach((oldScript) => {
+              const newScript = aboutBlankWindow.document.createElement('script');
+              if (oldScript.src) {
+                newScript.src = oldScript.src;
+              } else {
+                newScript.textContent = oldScript.textContent;
+              }
+              oldScript.replaceWith(newScript);
+            });
+          } catch (error) {
+            console.error('Failed to load game:', error);
+            aboutBlankWindow.document.write(`
+              <html>
+                <body style="display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #000; color: #fff; font-family: sans-serif;">
+                  <div style="text-align: center;">
+                    <h1>Failed to load game</h1>
+                    <p>Please try again or use the regular play button.</p>
+                  </div>
+                </body>
+              </html>
+            `);
+          }
+        }
       };
 
       (window as any).closegme = () => {
