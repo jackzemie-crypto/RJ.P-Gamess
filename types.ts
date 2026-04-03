@@ -1,15 +1,16 @@
 export interface Game {
   id: string;
   title: string;
-  platform: string;
+  platform?: string;
   system: string;
   year: string;
   color: string;
-  desc: string;
-  icon: string;
-  iconColor: string;
-  image: string;
+  desc?: string;
+  icon?: string;
+  iconColor?: string;
+  image?: string;
   link?: string;
+  frame?: boolean;
 }
 
 export interface FavoriteItem {
@@ -62,7 +63,7 @@ export interface ProxyItem {
   name?: string;
 }
 
-export type Category = 'home' | 'movies' | 'tv shows' | 'anime' | 'manga' | 'proxies' | 'partners' | 'dev' | 'support' | 'apps' | 'browser' | 'settings' | 'music' | 'games';
+export type Category = 'home' | 'movies' | 'tv shows' | 'anime' | 'manga' | 'proxies' | 'partners' | 'dev' | 'support' | 'apps' | 'browser' | 'settings' | 'music' | 'games' | 'chat' | 'admin-chat';
 
 export interface Anime {
   title: string;

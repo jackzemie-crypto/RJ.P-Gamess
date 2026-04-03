@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { db, auth } from '../firebase';
-import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, deleteDoc, updateDoc } from 'firebase/firestore';
+import { db, auth, handleFirestoreError, OperationType } from '../firebase';
+import { collection, addDoc, query, orderBy, getDocs, serverTimestamp, doc, deleteDoc, updateDoc, limit } from 'firebase/firestore';
 import EmojiPicker, { Theme as EmojiTheme } from 'emoji-picker-react';
-import { Send, Trash2, Edit2, Check, X, ShieldCheck, Smile, DollarSign, MessageSquare } from 'lucide-react';
+import { Send, Trash2, Edit2, Check, X, ShieldCheck, Smile, DollarSign, MessageSquare, AlertCircle, Zap, RefreshCw } from 'lucide-react';
 
 interface ChatRoomProps {
   collectionName?: string;
@@ -11,15 +11,31 @@ interface ChatRoomProps {
   isSuperAdmin?: boolean;
 }
 
+const BANNED_KEYWORDS = [
+  'beaner', 'esex', 'negro', 'nigger', 'niggers', 'p0rn', 'porn', 'sex'
+];
+
 const ChatRoom: React.FC<ChatRoomProps> = ({ collectionName = 'chat', isAdmin = false, isSuperAdmin = false }) => {
   const [messages, setMessages] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState('');
+  const [error, setError] = useState<string | null>(null);
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
   const [replyTo, setReplyTo] = useState<{ id: string, text: string, displayName: string } | null>(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [banConfirm, setBanConfirm] = useState<{ uid: string, displayName: string } | null>(null);
+  const isAtBottomRef = useRef(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
   const emojiPickerRef = useRef<HTMLDivElement>(null);
+
+  const handleScroll = () => {
+    if (chatContainerRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current;
+      // If we are within 100px of the bottom, consider it "at bottom"
+      isAtBottomRef.current = scrollHeight - scrollTop - clientHeight < 100;
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -31,36 +47,71 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ collectionName = 'chat', isAdmin = 
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const fetchMessages = async () => {
+    try {
+      const q = query(collection(db, collectionName), orderBy('createdAt', 'desc'), limit(100));
+      const snapshot = await getDocs(q);
+      const newMessages = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).reverse();
+      setMessages(newMessages);
+    } catch (err) {
+      console.error("ChatRoom fetch error:", err);
+      setError("Failed to load messages. Please check your permissions.");
+      handleFirestoreError(err, OperationType.LIST, collectionName);
+    }
+  };
+
   useEffect(() => {
-    const q = query(collection(db, collectionName), orderBy('createdAt', 'asc'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      setMessages(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-    });
-    return unsubscribe;
+    fetchMessages();
   }, [collectionName]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (isAtBottomRef.current && chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
   }, [messages]);
 
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim() || !auth.currentUser) return;
 
-    await addDoc(collection(db, collectionName), {
-      text: newMessage,
-      createdAt: serverTimestamp(),
-      uid: auth.currentUser.uid,
-      displayName: auth.currentUser.displayName || 'Anonymous',
-      role: isSuperAdmin ? 'super-admin' : (isAdmin ? 'admin' : 'user'),
-      replyTo: replyTo ? { id: replyTo.id, text: replyTo.text, displayName: replyTo.displayName } : null,
-    });
-    setNewMessage('');
-    setReplyTo(null);
+    const containsBanned = BANNED_KEYWORDS.some(word => 
+      newMessage.toLowerCase().includes(word.toLowerCase())
+    );
+
+    if (containsBanned && !isAdmin && !isSuperAdmin) {
+      setError('Your message contains prohibited language.');
+      setTimeout(() => setError(null), 3000);
+      return;
+    }
+
+    try {
+      await addDoc(collection(db, collectionName), {
+        text: newMessage,
+        createdAt: serverTimestamp(),
+        uid: auth.currentUser.uid,
+        displayName: auth.currentUser.displayName || 'Anonymous',
+        role: isSuperAdmin ? 'super-admin' : (isAdmin ? 'admin' : 'user'),
+        replyTo: replyTo ? { id: replyTo.id, text: replyTo.text, displayName: replyTo.displayName } : null,
+      });
+      setNewMessage('');
+      setReplyTo(null);
+      isAtBottomRef.current = true;
+      if (chatContainerRef.current) {
+        chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      }
+    } catch (err) {
+      setError("Failed to send message. You might be using prohibited language.");
+      setTimeout(() => setError(null), 3000);
+      handleFirestoreError(err, OperationType.CREATE, collectionName);
+    }
   };
 
   const deleteMessage = async (id: string) => {
-    await deleteDoc(doc(db, collectionName, id));
+    try {
+      await deleteDoc(doc(db, collectionName, id));
+    } catch (err) {
+      handleFirestoreError(err, OperationType.DELETE, `${collectionName}/${id}`);
+    }
   };
 
   const startEdit = (id: string, text: string) => {
@@ -69,9 +120,40 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ collectionName = 'chat', isAdmin = 
   };
 
   const saveEdit = async (id: string) => {
-    await updateDoc(doc(db, collectionName, id), { text: editValue });
-    setEditingMessageId(null);
-    setEditValue('');
+    const containsBanned = BANNED_KEYWORDS.some(word => 
+      editValue.toLowerCase().includes(word.toLowerCase())
+    );
+
+    if (containsBanned && !isAdmin && !isSuperAdmin) {
+      setError('Your message contains prohibited language.');
+      setTimeout(() => setError(null), 3000);
+      return;
+    }
+
+    try {
+      await updateDoc(doc(db, collectionName, id), { text: editValue });
+      setEditingMessageId(null);
+      setEditValue('');
+    } catch (err) {
+      setError("Failed to update message.");
+      setTimeout(() => setError(null), 3000);
+      handleFirestoreError(err, OperationType.UPDATE, `${collectionName}/${id}`);
+    }
+  };
+
+  const handleBanUser = async () => {
+    if (!banConfirm || !isSuperAdmin) return;
+    
+    try {
+      await updateDoc(doc(db, 'users', banConfirm.uid), { banned: true });
+      setError(`User ${banConfirm.displayName} has been banned.`);
+      setTimeout(() => setError(null), 3000);
+      setBanConfirm(null);
+    } catch (err) {
+      console.error("Error banning user:", err);
+      setError("Failed to ban user.");
+      handleFirestoreError(err, OperationType.UPDATE, `users/${banConfirm.uid}`);
+    }
   };
 
   return (
@@ -90,11 +172,31 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ collectionName = 'chat', isAdmin = 
             <p className="text-[10px] text-text-secondary font-bold uppercase tracking-widest">Live Community Discussion</p>
           </div>
         </div>
+        <button onClick={fetchMessages} className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-neutral-400 hover:text-white transition-all border border-white/5">
+          <RefreshCw size={16} />
+        </button>
+        <AnimatePresence>
+          {error && (
+            <motion.div 
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              className="bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-1.5 flex items-center gap-2 text-red-500 text-[10px] font-black uppercase tracking-widest"
+            >
+              <AlertCircle size={12} />
+              {error}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-      <div className="flex-1 overflow-y-auto space-y-4 mb-4 custom-scrollbar">
+      <div 
+        ref={chatContainerRef}
+        onScroll={handleScroll}
+        className="flex-1 overflow-y-auto space-y-4 mb-4 custom-scrollbar"
+      >
         {messages.map((msg) => (
           <div key={msg.id} className={`flex flex-col ${msg.uid === auth.currentUser?.uid ? 'items-end' : 'items-start'}`}>
-            {msg.role && (msg.role === 'admin' || msg.role === 'super-admin' || msg.role === 'donator') && (
+            {msg.role && (msg.role === 'admin' || msg.role === 'super-admin' || msg.role === 'donator' || msg.role === 'tester') && (
               <motion.div 
                 initial={{ opacity: 0, y: 5 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -103,18 +205,26 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ collectionName = 'chat', isAdmin = 
                     ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-black' 
                     : msg.role === 'donator'
                     ? 'bg-green-500 text-white'
+                    : msg.role === 'tester'
+                    ? 'bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white animate-pulse shadow-[0_0_10px_rgba(236,72,153,0.5)]'
                     : 'bg-accent text-white'
                 }`}
               >
-                {msg.role === 'donator' ? <DollarSign size={10} /> : <ShieldCheck size={10} />}
-                {msg.role === 'super-admin' ? 'Owner' : (msg.role === 'donator' ? 'Donator 💵' : 'Admin')}
+                {msg.role === 'donator' ? <DollarSign size={10} /> : (msg.role === 'tester' ? <Zap size={10} /> : <ShieldCheck size={10} />)}
+                {msg.role === 'super-admin' ? 'Owner' : (msg.role === 'donator' ? 'Donator 💵' : (msg.role === 'tester' ? 'Tester ✨' : 'Admin'))}
               </motion.div>
             )}
             <div className={`max-w-[70%] p-3 rounded-2xl ${msg.uid === auth.currentUser?.uid ? 'bg-accent text-white' : 'bg-white/5 text-neutral-300'}`}>
               <div className="flex justify-between items-center mb-1">
-                <p className="text-xs font-bold opacity-70">{msg.displayName}</p>
+                <p 
+                  className={`text-xs font-bold opacity-70 ${isSuperAdmin && msg.uid !== auth.currentUser?.uid ? 'cursor-pointer hover:text-red-500 transition-colors' : ''}`}
+                  onClick={() => isSuperAdmin && msg.uid !== auth.currentUser?.uid && setBanConfirm({ uid: msg.uid, displayName: msg.displayName })}
+                  title={isSuperAdmin && msg.uid !== auth.currentUser?.uid ? "Click to ban user" : ""}
+                >
+                  {msg.displayName}
+                </p>
                 <p className="text-[10px] opacity-50 ml-2">
-                  {msg.createdAt?.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  {msg.createdAt ? msg.createdAt.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '...'}
                 </p>
               </div>
               {msg.replyTo && (
@@ -203,6 +313,45 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ collectionName = 'chat', isAdmin = 
           <Send size={18} />
         </button>
       </form>
+
+      <AnimatePresence>
+        {banConfirm && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-6"
+          >
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="bg-neutral-900 border border-red-500/30 rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl"
+            >
+              <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center text-red-500 mx-auto mb-6">
+                <AlertCircle size={32} />
+              </div>
+              <h3 className="text-xl font-black italic uppercase tracking-tighter text-white mb-2">Ban User?</h3>
+              <p className="text-neutral-400 text-sm mb-8">
+                Are you sure you want to ban <span className="text-white font-bold">{banConfirm.displayName}</span>? This will prevent them from using the platform.
+              </p>
+              <div className="flex gap-3">
+                <button 
+                  onClick={() => setBanConfirm(null)}
+                  className="flex-1 px-6 py-3 rounded-xl bg-white/5 text-white font-bold uppercase tracking-widest text-xs hover:bg-white/10 transition-all"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={handleBanUser}
+                  className="flex-1 px-6 py-3 rounded-xl bg-red-500 text-white font-bold uppercase tracking-widest text-xs hover:bg-red-600 transition-all shadow-lg shadow-red-500/20"
+                >
+                  Confirm Ban
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
     </div>
   );

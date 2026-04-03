@@ -247,7 +247,7 @@ const LINK_DB: Record<string, string> = {
   "Spider-Man: Far From Home": "https://drive.google.com/file/d/1vPNUTkubVVmguVfwstRQm5xgbkRRii6z/view",
   "Spider-Man: No Way Home": "https://drive.google.com/file/d/1mUF4PcT0_ZKofV0KHHdjxgTQdhF2BliQ/view",
   "Spider-Man: Into the Spider-verse": "https://drive.google.com/file/d/1V3Bq0lrDQUxJay5DDs3gK69ZvRNb1j2u/view?usp=share_link",
-  "Spider-Man Across The Spider-Verse": "https://drive.google.com/file/d/19DDFQa5wunk2GD8jaTSVeO5w07uwmBK8/view?usp=sharing",
+  "Spider-Man Across The Spider-Verse": "https://drive.google.com/file/d/1Sd1l_LhKRp_2OE5gRJJyPubnZjJccLgQ/view?usp=sharing",
   "Spider-Man": "https://drive.google.com/file/d/1sqWGrmbGc5lBmoFbtfMSIaqb60eXppvF/view?usp=share_link",
   "Spider-Man 2": "https://drive.google.com/file/d/1yV7ZmEkfOVOLdV51wN6vSeDf3_tQqBvf/view?usp=share_link",
   "Spider-Man 3": "https://drive.google.com/file/d/1ExTfRPC3YGmCSg8W2uFSYkUMw7a1vcTR/view?usp=share_link",
@@ -811,13 +811,14 @@ export const MANGA_DATA: LibraryItem[] = MANGA.map(manga => ({
 
 export const APPS_DATA: LibraryItem[] = [
   { t: "YouTube", l: "https://youtube.com", img: "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=800&q=80", year: 2005, genre: ["Video", "Social"], rating: 9.8 },
+  { t: "Discord", l: "https://discord.com", img: "https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?w=800&q=80", year: 2015, genre: ["Chat", "Social"], rating: 9.5 },
   { t: "TikTok", l: "https://tiktok.com", img: "https://images.unsplash.com/photo-1611605698335-8b1569810432?w=800&q=80", year: 2016, genre: ["Social", "Video"], rating: 8.9 },
   { t: "GitHub", l: "https://github.com", img: "https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=800&q=80", year: 2008, genre: ["Development", "Code"], rating: 9.7 },
   { t: "ChatGPT", l: "https://chat.openai.com", img: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&q=80", year: 2022, genre: ["AI", "Tools"], rating: 9.9 },
 ];
 
 export const CLOAK_OPTIONS = [
-  { id: 'none', name: 'None', icon: '❌', title: 'KRYPTON', favicon: '/favicon.ico' },
+  { id: 'none', name: 'None', icon: '❌', title: 'MONOCHROME', favicon: '/favicon.ico' },
   { id: 'google', name: 'Google', icon: '🔍', title: 'Google', favicon: 'https://www.google.com/favicon.ico' },
   { id: 'drive', name: 'Google Drive', icon: '📂', title: 'My Drive - Google Drive', favicon: 'https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png' },
   { id: 'canvas', name: 'Canvas', icon: '🎓', title: 'Dashboard', favicon: 'https://du11hjcvx0uqb.cloudfront.net/br/dist/images/favicon-e10d657a73.ico' },
@@ -825,6 +826,7 @@ export const CLOAK_OPTIONS = [
   { id: 'zoom', name: 'Zoom', icon: '📹', title: 'Zoom Meetings', favicon: 'https://st1.zoom.us/zoom.ico' },
 ];
 export const PROXIES_DATA: ProxyItem[] = [
+  { url: "https://monochrome.tf/", name: "Monochrome" },
   { url: "https://pizzatowerplay.com/", name: "Pizza Tower" },
   { url: "https://mathhomeworkhelp.pythagorasweb.com.ar/index.html", name: "Math Homework Help" },
   { url: "https://cookiss4u.wasmer.app/", name: "Cookiss4u" },
@@ -870,15 +872,20 @@ export const PROXIES_DATA: ProxyItem[] = [
 
 export const PARTNERS_DATA: PartnerItem[] = [
   { 
-    name: "RJ.P Games", 
-    owner: "RJ.P", 
-    url: "https://rj-p-gamess.vercel.app/",
-    banner: "https://files.catbox.moe/4wz029.svg",
-    avatar: "https://files.catbox.moe/4wz029.svg"
+    name: "カービィアーケード", 
+    owner: "SAM", 
+    url: "https://sites.google.com/view/fus3-bomb/page", 
+    urls: [
+      { name: "Google Sites", url: "https://sites.google.com/view/fus3-bomb/page" },
+      { name: "GitHub Pages", url: "https://mkplaza.github.io/" }
+    ],
+    banner: "https://preview.redd.it/what-are-your-favorite-meta-knight-battle-themes-and-v0-2rludfrd5hqb1.jpg?width=640&crop=smart&auto=webp&s=9a5cf8aac407cfafbcea666f0baca6293dfa2123",
+    avatar: "https://cdn.jsdelivr.net/gh/MKPlaza/MKPlaza.github.io@main/Meta_Knight_Logo.webp"
   }
 ];
 
 export const STAFF_DATA: StaffMember[] = [
-  { name: "RJ.P", role: "Owner", img: "https://files.catbox.moe/5mijpj.png", link: "https://guns.lol/zzemie" },
-  { name: "pcidiagnosticbus", role: "Co-Owner", img: "https://files.catbox.moe/rgh3mz.png" }
+    { name: "RJ.P", role: "Owner", img: "https://files.catbox.moe/5mijpj.png", link: "https://guns.lol/zzemie" },
+    { name: "pcidiagnosticbus", role: "Co-Owner", img: "https://files.catbox.moe/rgh3mz.png", }
 ];
+

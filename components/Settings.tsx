@@ -2,8 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { VenetianMask, Palette, ChevronDown, Edit2, X, ExternalLink, Globe } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
+import { auth, db, handleFirestoreError, OperationType } from '../firebase';
+import { doc, updateDoc } from 'firebase/firestore';
 
-type ThemeColors = {
+export type ThemeColors = {
   bg: string;
   textPrimary: string;
   surface: string;
@@ -12,15 +14,15 @@ type ThemeColors = {
   surfaceHover: string;
 };
 
-type Theme = {
+export type Theme = {
   id: string;
   name: string;
   colors: ThemeColors;
 };
 
-const defaultThemes: Record<string, Theme> = {
-  rjpgames: {
-    id: 'rjpgames',
+export const defaultThemes: Record<string, Theme> = {
+  chillzone: {
+    id: 'chillzone',
     name: 'RJ.P Games (Default)',
     colors: {
       bg: '#050505',
@@ -102,6 +104,30 @@ const defaultThemes: Record<string, Theme> = {
       accent: '#8b5cf6',
       surfaceHover: '#2e1065',
     }
+  },
+  halloween: {
+    id: 'halloween',
+    name: 'Halloween',
+    colors: {
+      bg: '#0a0a0a',
+      textPrimary: '#ffffff',
+      surface: '#1a0f00',
+      border: '#2a1a00',
+      accent: '#ff7518',
+      surfaceHover: '#2a1a00',
+    }
+  },
+  aprilfools: {
+    id: 'aprilfools',
+    name: 'April Fools',
+    colors: {
+      bg: '#ff69b4',
+      textPrimary: '#39ff14',
+      surface: '#00ffff',
+      border: '#ffff00',
+      accent: '#ff0000',
+      surfaceHover: '#ffffff',
+    }
   }
 };
 
@@ -147,7 +173,7 @@ const CustomSelect = ({ value, options, onChange }: any) => {
       </button>
       
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-surface border border-border rounded-lg shadow-xl overflow-hidden z-50">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-surface border border-border rounded-lg shadow-xl max-h-60 overflow-y-auto custom-scrollbar z-50">
           {options.map((opt: any) => (
             <button
               key={opt.value}
@@ -327,10 +353,18 @@ interface SettingsProps {
 
 const Settings: React.FC<SettingsProps> = ({ onClose }) => {
   const [activeSection, setActiveSection] = useState('theme');
-  const [currentThemeId, setCurrentThemeId] = useState(() => localStorage.getItem('custom_theme_id') || 'rjpgames');
+  const [currentThemeId, setCurrentThemeId] = useState(() => localStorage.getItem('custom_theme_id') || 'chillzone');
   const [customThemes, setCustomThemes] = useState(() => {
     const saved = localStorage.getItem('custom_themes');
-    return saved ? JSON.parse(saved) : defaultThemes;
+    const themes = saved ? JSON.parse(saved) : { ...defaultThemes };
+    
+    // Merge new default themes if they don't exist in saved themes
+    Object.keys(defaultThemes).forEach(key => {
+      if (!themes[key]) {
+        themes[key] = defaultThemes[key];
+      }
+    });
+    return themes;
   });
 
   const [cloakPreset, setCloakPreset] = useState('google');
@@ -339,7 +373,7 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
 
   const { language, setLanguage, militaryTime, setMilitaryTime, timeZone, setTimeZone, t } = useLanguage();
 
-  const activeTheme = customThemes[currentThemeId] || defaultThemes.rjpgames;
+  const activeTheme = customThemes[currentThemeId] || defaultThemes.chillzone;
 
   useEffect(() => {
     const root = document.documentElement;
@@ -359,9 +393,20 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
     const rgb = hexToRgb(activeTheme.colors.accent);
     root.style.setProperty('--accent-glow', `rgba(${rgb}, 0.3)`);
     root.style.setProperty('--accent-glow-dim', `rgba(${rgb}, 0.1)`);
+    root.dataset.theme = currentThemeId;
 
     localStorage.setItem('custom_theme_id', currentThemeId);
     localStorage.setItem('custom_themes', JSON.stringify(customThemes));
+    
+    // Sync to Firebase if logged in
+    if (auth.currentUser) {
+      updateDoc(doc(db, 'users', auth.currentUser.uid), {
+        theme: currentThemeId,
+        customThemes: JSON.stringify(customThemes)
+      }).catch(err => {
+        handleFirestoreError(err, OperationType.UPDATE, `users/${auth.currentUser?.uid}`);
+      });
+    }
   }, [activeTheme, currentThemeId, customThemes]);
 
   const handleColorChange = (key: keyof ThemeColors, color: string) => {
@@ -388,7 +433,7 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
   };
 
   const handleReset = () => {
-    setCurrentThemeId('rjpgames');
+    setCurrentThemeId('chillzone');
     setCustomThemes(defaultThemes);
   };
 
@@ -478,7 +523,7 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-6 z-10 relative">
+      <div className="flex-1 p-6 z-10 relative overflow-y-auto custom-scrollbar">
         <div className="max-w-full mx-auto">
           {activeSection === 'theme' && (
             <motion.div
@@ -490,6 +535,16 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
                 <h2 className="text-xl font-semibold mb-1">{t('Theme')}</h2>
                 <p className="text-xs opacity-60">{t('Changes apply instantly.')}</p>
               </div>
+
+              {currentThemeId === 'aprilfools' && (
+                <motion.div 
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="mb-6 p-4 bg-accent/10 border border-accent/30 rounded-xl text-center backdrop-blur-sm"
+                >
+                  <p className="text-sm font-black text-accent italic uppercase tracking-widest">"Wait, are the words moving? I think I'm losing it..." 🤡</p>
+                </motion.div>
+              )}
 
               <div className="space-y-6">
                 {/* Theme Selection */}

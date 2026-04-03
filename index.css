@@ -1,12 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+@import "tailwindcss";
+
 @font-face {
   font-family: 'Swordskull';
   src: url('/fonts/Swordskull_PERSONAL_USE.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
-@import "tailwindcss";
 
 :root {
   --accent: #ff0000;
@@ -60,6 +60,20 @@
   --surface: #141405;
   --surface-hover: #29290a;
   --surface-active: #444411;
+}
+
+[data-theme="halloween"] {
+  --accent: #ff7518;
+  --accent-glow: rgba(255, 117, 24, 0.3);
+  --accent-glow-dim: rgba(255, 117, 24, 0.1);
+  --bg: #0a0a0a;
+  --surface: #1a0f00;
+  --surface-hover: #2a1a00;
+  --surface-active: #3a2500;
+}
+
+[data-theme="aprilfools"] {
+  --font-sans: "Comic Sans MS", "Comic Sans", cursive !important;
 }
 
 @theme {
