@@ -301,18 +301,16 @@ export function GamesHub() {
         <input id="search" className="w-full p-4 mb-4 bg-white/5 border border-white/10 text-white rounded-2xl" placeholder="Search..." />
         <div id="gmeContainer"></div>
         
-        <div id="gmePageContainer" className="hidden fixed inset-0 z-[200] bg-black flex flex-col">
-          <div style={{position: 'relative', zIndex: 50, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', backgroundColor: '#000000', borderBottom: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 4px 6px rgba(0,0,0,0.5)'}}>
-            <button id="backBtn" style={{padding: '10px 16px', backgroundColor: '#1a1a1a', border: '1px solid rgba(255,255,255,0.1)', color: '#ffffff', fontWeight: 'bold', textTransform: 'uppercase', borderRadius: '8px', cursor: 'pointer', fontSize: '14px'}}>Back</button>
-            <h1 id="gmePageTitle" style={{color: '#ffffff', fontWeight: 'bold', fontSize: '20px', margin: 0}}></h1>
+        <div id="gmePageContainer" className="hidden fixed inset-0 z-[200] bg-black">
+          <div style={{position: 'absolute', top: 0, left: 0, right: 0, zIndex: 9999, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', backgroundColor: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)'}}>
+            <button id="backBtn" style={{padding: '10px 16px', backgroundColor: '#1a1a1a', border: '1px solid rgba(255,255,255,0.2)', color: '#ffffff', fontWeight: 'bold', textTransform: 'uppercase', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', boxShadow: '0 2px 8px rgba(0,0,0,0.5)'}}>Back</button>
+            <h1 id="gmePageTitle" style={{color: '#ffffff', fontWeight: 'bold', fontSize: '20px', margin: 0, textShadow: '0 2px 4px rgba(0,0,0,0.8)'}}></h1>
             <div style={{display: 'flex', gap: '8px'}}>
-              <button id="fullscreenBtn" style={{padding: '10px 16px', backgroundColor: '#6366f1', border: '1px solid rgba(99,102,241,0.2)', color: '#ffffff', fontWeight: 'bold', textTransform: 'uppercase', borderRadius: '8px', cursor: 'pointer', fontSize: '14px'}}>Fullscreen</button>
-              <button id="exitGameBtn" style={{padding: '10px 16px', backgroundColor: '#ef4444', border: '1px solid rgba(239,68,68,0.2)', color: '#ffffff', fontWeight: 'bold', textTransform: 'uppercase', borderRadius: '8px', cursor: 'pointer', fontSize: '14px'}}>Exit Game</button>
+              <button id="fullscreenBtn" style={{padding: '10px 16px', backgroundColor: '#6366f1', border: '1px solid rgba(99,102,241,0.3)', color: '#ffffff', fontWeight: 'bold', textTransform: 'uppercase', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', boxShadow: '0 2px 8px rgba(0,0,0,0.5)'}}>Fullscreen</button>
+              <button id="exitGameBtn" style={{padding: '10px 16px', backgroundColor: '#ef4444', border: '1px solid rgba(239,68,68,0.3)', color: '#ffffff', fontWeight: 'bold', textTransform: 'uppercase', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', boxShadow: '0 2px 8px rgba(0,0,0,0.5)'}}>Exit Game</button>
             </div>
           </div>
-          <div className="relative flex-1">
-            <iframe id="gmePageFrame" className="absolute inset-0 w-full h-full border-none" />
-          </div>
+          <iframe id="gmePageFrame" style={{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none'}} />
         </div>
       </div>
     </motion.div>
