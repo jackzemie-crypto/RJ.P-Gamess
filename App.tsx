@@ -137,7 +137,7 @@ const getInitialCategory = (): Category => {
   if (validCategories.includes(normalizedPath)) {
     return normalizedPath;
   }
-  return 'movies';
+  return 'support';
 };
 
 const App: React.FC = () => {
@@ -388,7 +388,7 @@ const App: React.FC = () => {
       if (validCategories.includes(normalizedPath)) {
         setActiveCategory(normalizedPath);
       } else {
-        setActiveCategory('movies');
+        setActiveCategory('support');
       }
     };
     window.addEventListener('popstate', handlePopState);
