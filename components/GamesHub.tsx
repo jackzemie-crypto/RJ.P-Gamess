@@ -302,7 +302,7 @@ export function GamesHub() {
         <div id="gmeContainer"></div>
         
         <div id="gmePageContainer" className="hidden fixed inset-0 z-[200] bg-black flex flex-col">
-          <div className="flex justify-between items-center p-4 bg-black/80 border-b border-white/10">
+          <div className="flex justify-between items-center p-4 bg-black border-b border-white/10">
             <button id="backBtn" className="px-4 py-2 bg-surface-hover border border-white/10 text-white font-bold uppercase rounded-lg hover:bg-surface transition-all">Back</button>
             <h1 id="gmePageTitle" className="text-white font-bold text-xl"></h1>
             <div className="flex gap-2">
