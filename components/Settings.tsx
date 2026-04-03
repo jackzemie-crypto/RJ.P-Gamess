@@ -21,8 +21,8 @@ export type Theme = {
 };
 
 export const defaultThemes: Record<string, Theme> = {
-  chillzone: {
-    id: 'chillzone',
+  RJ.P Games: {
+    id: 'RJ.P Games',
     name: 'RJ.P Games (Default)',
     colors: {
       bg: '#050505',
@@ -353,7 +353,7 @@ interface SettingsProps {
 
 const Settings: React.FC<SettingsProps> = ({ onClose }) => {
   const [activeSection, setActiveSection] = useState('theme');
-  const [currentThemeId, setCurrentThemeId] = useState(() => localStorage.getItem('custom_theme_id') || 'chillzone');
+  const [currentThemeId, setCurrentThemeId] = useState(() => localStorage.getItem('custom_theme_id') || 'RJ.P Games');
   const [customThemes, setCustomThemes] = useState(() => {
     const saved = localStorage.getItem('custom_themes');
     const themes = saved ? JSON.parse(saved) : { ...defaultThemes };
@@ -373,7 +373,7 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
 
   const { language, setLanguage, militaryTime, setMilitaryTime, timeZone, setTimeZone, t } = useLanguage();
 
-  const activeTheme = customThemes[currentThemeId] || defaultThemes.chillzone;
+  const activeTheme = customThemes[currentThemeId] || defaultThemes.RJ.P Games;
 
   useEffect(() => {
     // Safety check for theme colors
@@ -439,7 +439,7 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
   };
 
   const handleReset = () => {
-    setCurrentThemeId('chillzone');
+    setCurrentThemeId('RJ.P Games');
     setCustomThemes(defaultThemes);
   };
 
