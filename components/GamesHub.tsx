@@ -302,12 +302,12 @@ export function GamesHub() {
         <div id="gmeContainer"></div>
         
         <div id="gmePageContainer" className="hidden fixed inset-0 z-[200] bg-black flex flex-col">
-          <div className="relative z-10 flex justify-between items-center p-4 bg-black border-b border-white/10 shadow-lg">
-            <button id="backBtn" className="px-4 py-2 bg-surface-hover border border-white/10 text-white font-bold uppercase rounded-lg hover:bg-surface transition-all">Back</button>
-            <h1 id="gmePageTitle" className="text-white font-bold text-xl"></h1>
-            <div className="flex gap-2">
-              <button id="fullscreenBtn" className="px-4 py-2 bg-accent border border-accent/20 text-white font-bold uppercase rounded-lg hover:bg-accent/80 transition-all">Fullscreen</button>
-              <button id="exitGameBtn" className="px-4 py-2 bg-red-500 border border-red-500/20 text-white font-bold uppercase rounded-lg hover:bg-red-600 transition-all">Exit Game</button>
+          <div style={{position: 'relative', zIndex: 50, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', backgroundColor: '#000000', borderBottom: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 4px 6px rgba(0,0,0,0.5)'}}>
+            <button id="backBtn" style={{padding: '10px 16px', backgroundColor: '#1a1a1a', border: '1px solid rgba(255,255,255,0.1)', color: '#ffffff', fontWeight: 'bold', textTransform: 'uppercase', borderRadius: '8px', cursor: 'pointer', fontSize: '14px'}}>Back</button>
+            <h1 id="gmePageTitle" style={{color: '#ffffff', fontWeight: 'bold', fontSize: '20px', margin: 0}}></h1>
+            <div style={{display: 'flex', gap: '8px'}}>
+              <button id="fullscreenBtn" style={{padding: '10px 16px', backgroundColor: '#6366f1', border: '1px solid rgba(99,102,241,0.2)', color: '#ffffff', fontWeight: 'bold', textTransform: 'uppercase', borderRadius: '8px', cursor: 'pointer', fontSize: '14px'}}>Fullscreen</button>
+              <button id="exitGameBtn" style={{padding: '10px 16px', backgroundColor: '#ef4444', border: '1px solid rgba(239,68,68,0.2)', color: '#ffffff', fontWeight: 'bold', textTransform: 'uppercase', borderRadius: '8px', cursor: 'pointer', fontSize: '14px'}}>Exit Game</button>
             </div>
           </div>
           <div className="relative flex-1">
