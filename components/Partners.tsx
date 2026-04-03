@@ -55,10 +55,15 @@ const Partners: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="bg-black/40 border border-white/10 rounded-3xl p-8">
               <h3 className="text-text-secondary text-xs font-black uppercase tracking-widest mb-4">SOCIALS</h3>
-              <button className="flex items-center gap-3 bg-white/5 hover:bg-white/10 px-6 py-4 rounded-xl transition-all">
+              <a 
+                href="https://discord.com/invite/XAsZ5UVGV4" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 bg-white/5 hover:bg-white/10 px-6 py-4 rounded-xl transition-all"
+              >
                 <MessageSquare size={20} />
                 <span>Discord</span>
-              </button>
+              </a>
             </div>
             <div className="bg-black/40 border border-white/10 rounded-3xl p-8">
               <h3 className="text-text-secondary text-xs font-black uppercase tracking-widest mb-4">DIRECT ACCESS</h3>
