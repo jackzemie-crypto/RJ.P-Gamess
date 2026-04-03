@@ -258,23 +258,26 @@ const App: React.FC = () => {
             const customThemes = savedThemes ? JSON.parse(savedThemes) : { ...defaultThemes };
             const activeTheme = customThemes[data.theme] || defaultThemes.chillzone;
             
-            const root = document.documentElement;
-            root.style.setProperty('--bg', activeTheme.colors.bg);
-            root.style.setProperty('--text-primary', activeTheme.colors.textPrimary);
-            root.style.setProperty('--surface', activeTheme.colors.surface);
-            root.style.setProperty('--border', activeTheme.colors.border);
-            root.style.setProperty('--accent', activeTheme.colors.accent);
-            root.style.setProperty('--surface-hover', activeTheme.colors.surfaceHover);
-            
-            const hexToRgb = (hex: string) => {
-              const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-              return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '255, 0, 0';
-            };
-            
-            const rgb = hexToRgb(activeTheme.colors.accent);
-            root.style.setProperty('--accent-glow', `rgba(${rgb}, 0.3)`);
-            root.style.setProperty('--accent-glow-dim', `rgba(${rgb}, 0.1)`);
-            root.dataset.theme = data.theme;
+            // Safety check for theme colors
+            if (activeTheme && activeTheme.colors) {
+              const root = document.documentElement;
+              root.style.setProperty('--bg', activeTheme.colors.bg);
+              root.style.setProperty('--text-primary', activeTheme.colors.textPrimary);
+              root.style.setProperty('--surface', activeTheme.colors.surface);
+              root.style.setProperty('--border', activeTheme.colors.border);
+              root.style.setProperty('--accent', activeTheme.colors.accent);
+              root.style.setProperty('--surface-hover', activeTheme.colors.surfaceHover);
+              
+              const hexToRgb = (hex: string) => {
+                const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '255, 0, 0';
+              };
+              
+              const rgb = hexToRgb(activeTheme.colors.accent);
+              root.style.setProperty('--accent-glow', `rgba(${rgb}, 0.3)`);
+              root.style.setProperty('--accent-glow-dim', `rgba(${rgb}, 0.1)`);
+              root.dataset.theme = data.theme;
+            }
           }
           
           // Update admin status based on role in database
@@ -315,24 +318,27 @@ const App: React.FC = () => {
 
     const activeTheme = customThemes[currentThemeId] || defaultThemes.chillzone;
     
-    const root = document.documentElement;
-    root.style.setProperty('--bg', activeTheme.colors.bg);
-    root.style.setProperty('--text-primary', activeTheme.colors.textPrimary);
-    root.style.setProperty('--surface', activeTheme.colors.surface);
-    root.style.setProperty('--border', activeTheme.colors.border);
-    root.style.setProperty('--accent', activeTheme.colors.accent);
-    root.style.setProperty('--surface-hover', activeTheme.colors.surfaceHover);
-    
-    // Convert hex to rgba for glows
-    const hexToRgb = (hex: string) => {
-      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-      return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '255, 0, 0';
-    };
-    
-    const rgb = hexToRgb(activeTheme.colors.accent);
-    root.style.setProperty('--accent-glow', `rgba(${rgb}, 0.3)`);
-    root.style.setProperty('--accent-glow-dim', `rgba(${rgb}, 0.1)`);
-    root.dataset.theme = currentThemeId;
+    // Safety check for theme colors
+    if (activeTheme && activeTheme.colors) {
+      const root = document.documentElement;
+      root.style.setProperty('--bg', activeTheme.colors.bg);
+      root.style.setProperty('--text-primary', activeTheme.colors.textPrimary);
+      root.style.setProperty('--surface', activeTheme.colors.surface);
+      root.style.setProperty('--border', activeTheme.colors.border);
+      root.style.setProperty('--accent', activeTheme.colors.accent);
+      root.style.setProperty('--surface-hover', activeTheme.colors.surfaceHover);
+      
+      // Convert hex to rgba for glows
+      const hexToRgb = (hex: string) => {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '255, 0, 0';
+      };
+      
+      const rgb = hexToRgb(activeTheme.colors.accent);
+      root.style.setProperty('--accent-glow', `rgba(${rgb}, 0.3)`);
+      root.style.setProperty('--accent-glow-dim', `rgba(${rgb}, 0.1)`);
+      root.dataset.theme = currentThemeId;
+    }
   }, []);
 
   useEffect(() => {
