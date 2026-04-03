@@ -302,7 +302,7 @@ export function GamesHub() {
         <div id="gmeContainer"></div>
         
         <div id="gmePageContainer" className="hidden fixed inset-0 z-[200] bg-black flex flex-col">
-          <div className="flex justify-between items-center p-4 bg-black border-b border-white/10">
+          <div className="relative z-10 flex justify-between items-center p-4 bg-black border-b border-white/10 shadow-lg">
             <button id="backBtn" className="px-4 py-2 bg-surface-hover border border-white/10 text-white font-bold uppercase rounded-lg hover:bg-surface transition-all">Back</button>
             <h1 id="gmePageTitle" className="text-white font-bold text-xl"></h1>
             <div className="flex gap-2">
@@ -310,7 +310,9 @@ export function GamesHub() {
               <button id="exitGameBtn" className="px-4 py-2 bg-red-500 border border-red-500/20 text-white font-bold uppercase rounded-lg hover:bg-red-600 transition-all">Exit Game</button>
             </div>
           </div>
-          <iframe id="gmePageFrame" className="w-full h-full border-none" />
+          <div className="relative flex-1">
+            <iframe id="gmePageFrame" className="absolute inset-0 w-full h-full border-none" />
+          </div>
         </div>
       </div>
     </motion.div>
