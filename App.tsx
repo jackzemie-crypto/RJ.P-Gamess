@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Sidebar from './components/Sidebar';
 import LibrarySection from './components/LibrarySection';
-import Settings, { defaultThemes } from './components/Settings';
+import Settings from './components/Settings';
 import MusicPlayer from './components/MusicPlayer';
 import Partners from './components/Partners';
 import UpdateLog from './components/UpdateLog';
@@ -13,17 +13,9 @@ import { MOVIES_DATA, ANIME_DATA, MANGA_DATA, TV_DATA, STAFF_DATA, PARTNERS_DATA
 import { GAME_PAYLOADS } from './gamePayloads';
 import { getEmulatorHtml } from './services/emulatorService';
 import { useLanguage } from './context/LanguageContext';
-import { auth, logout, db, handleFirestoreError, OperationType } from './firebase';
-import { onAuthStateChanged, User } from 'firebase/auth';
-import { doc, getDoc, updateDoc, onSnapshot } from 'firebase/firestore';
-import ChatRoom from './components/ChatRoom';
-import AdminDashboard from './components/AdminDashboard';
-import AuthModal from './components/AuthModal';
-import SuggestionModal from './components/SuggestionModal';
-import { SiteAnnouncements } from './components/SiteAnnouncements';
-import { Search, X, Film, Sparkles, BookOpen, Tv, SearchX, PlayCircle, Star, Globe, Users, ExternalLink, ShieldAlert, Zap, MessageSquare, Activity, Loader2, Book, AlertTriangle, Settings as SettingsIcon, GitCommit, ChevronDown, LayoutGrid, Gamepad2, ShieldCheck, LogOut, LogIn, Send } from 'lucide-react';
+import { Search, X, Film, Sparkles, BookOpen, Tv, SearchX, PlayCircle, Star, Globe, Users, ExternalLink, ShieldAlert, Zap, MessageSquare, Activity, Loader2, Book, AlertTriangle, Settings as SettingsIcon, GitCommit, ChevronDown, LayoutGrid, Gamepad2 } from 'lucide-react';
 
-const DEFAULT_LOGO = "https://files.catbox.moe/5mijpj.png";
+const DEFAULT_LOGO = "https://lh7-rt.googleusercontent.com/sitesz/AClOY7psM7n5cC2oRAQVLVss3LsgYFKWwE-KzTjGQvDYtnnp1f1j-Szl1OH6r1pZTXpsw0t_1es0N4P9E2cBl4Oqs-lOwNJdAt3H5CiGxGZKfBTzaYq_ybiI1qd2dWXWu_GRWMqLDD_3BL9tkNhJBNJhjBuuQWyvP1B19h6v0fblyHBwfxs-94c7?key=IannGxLsV9P5UfJ0NHPqqQ";
 
 const DiscordIcon = ({ size = 20, className = "" }: { size?: number, className?: string }) => (
   <svg 
@@ -57,230 +49,25 @@ const TranslatedText: React.FC<{ text: string }> = ({ text }) => {
   return <>{translated}</>;
 };
 
-const ScrambleEffect: React.FC = () => {
-  useEffect(() => {
-    let interval: any;
-    const originalTexts = new Map<HTMLElement, string>();
-
-    const scrambleText = (text: string) => {
-      if (!text) return '';
-      return text.split(' ').map(word => {
-        if (word.length <= 3) return word;
-        const chars = word.split('');
-        for (let i = chars.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [chars[i], chars[j]] = [chars[j], chars[i]];
-        }
-        return chars.join('');
-      }).join(' ');
-    };
-
-    const runScramble = () => {
-      if (document.documentElement.dataset.theme !== 'aprilfools') return;
-
-      // Only target elements that likely contain plain text and are not too complex
-      const elements = Array.from(document.querySelectorAll('h1, h2, h3, p, span, button')) as HTMLElement[];
-      const targetElements = elements
-        .filter(el => {
-          // Avoid elements with many children to prevent React crashes
-          return el.childNodes.length === 1 && el.childNodes[0].nodeType === 3 && Math.random() > 0.7;
-        })
-        .slice(0, 20);
-
-      targetElements.forEach(el => {
-        if (!originalTexts.has(el)) {
-          originalTexts.set(el, el.innerText);
-        }
-        el.innerText = scrambleText(el.innerText);
-      });
-
-      setTimeout(() => {
-        targetElements.forEach(el => {
-          const original = originalTexts.get(el);
-          if (original && document.contains(el)) {
-            el.innerText = original;
-            originalTexts.delete(el);
-          }
-        });
-      }, 1500);
-    };
-
-    interval = setInterval(runScramble, 5000);
-    return () => {
-      clearInterval(interval);
-      originalTexts.forEach((text, el) => {
-        if (document.contains(el)) {
-          el.innerText = text;
-        }
-      });
-    };
-  }, []);
-
-  return null;
-};
-
-const getInitialCategory = (): Category => {
-  const path = window.location.pathname.substring(1).toLowerCase();
-  const normalizedPath = path.replace('-', ' ') as Category;
-  const validCategories: Category[] = ['home', 'movies', 'tv shows', 'anime', 'manga', 'proxies', 'partners', 'dev', 'support', 'apps', 'browser', 'settings', 'music', 'games'];
-  
-  if (validCategories.includes(normalizedPath)) {
-    return normalizedPath;
-  }
-  return 'support';
-};
-
 const App: React.FC = () => {
-  const [activeCategory, setActiveCategory] = useState<Category>(getInitialCategory);
+  const [activeCategory, setActiveCategory] = useState<Category>('donate');
   const [searchQuery, setSearchQuery] = useState('');
   const [proxySearch, setProxySearch] = useState('');
   const [customLogo, setCustomLogo] = useState<string>(DEFAULT_LOGO);
-
-  // Debugging customLogo
-  useEffect(() => {
-    if (customLogo !== undefined && typeof customLogo !== 'string' && customLogo !== null) {
-      console.warn('App: customLogo is not a string:', customLogo);
-    }
-  }, [customLogo]);
-
   const [selectedItem, setSelectedItem] = useState<{item: LibraryItem, category: string, showPlayer: boolean} | null>(null);
-
-  // Debugging selectedItem.item.img
-  useEffect(() => {
-    if (selectedItem?.item?.img !== undefined && typeof selectedItem?.item?.img !== 'string' && selectedItem?.item?.img !== null) {
-      console.warn('App: selectedItem.item.img is not a string:', selectedItem.item.img, 'for item:', selectedItem.item.t);
-    }
-  }, [selectedItem]);
-
   const [selectedStaff, setSelectedStaff] = useState<StaffMember | null>(null);
-  const [favorites, setFavorites] = useState<FavoriteItem[]>(() => {
-    const saved = localStorage.getItem('rjpgames_favorites');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isUpdateLogOpen, setIsUpdateLogOpen] = useState(false);
-  const [isAdminOpen, setIsAdminOpen] = useState(false);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [isSuggestionModalOpen, setIsSuggestionModalOpen] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
-  const [isAuthReady, setIsAuthReady] = useState(false);
   const { t } = useLanguage();
 
-  // Debug auth modal state
   useEffect(() => {
-    console.log('Auth modal state changed:', isAuthModalOpen);
-  }, [isAuthModalOpen]);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      console.log("Auth state changed:", currentUser?.email);
-      setUser(currentUser);
-      setIsAdmin(currentUser?.email === 'darkfn1234567890@gmail.com' || currentUser?.email === 'whitecaleb888@gmail.com' || currentUser?.email === 'calebwhite2@chisd.net' || currentUser?.email === 'lily.smith7406@gmail.com' || currentUser?.email === 'pcidiagnosticbus@gmail.com')
-      setIsSuperAdmin(currentUser?.email === 'darkfn1234567890@gmail.com' || currentUser?.email === 'whitecaleb888@gmail.com')
-      setIsAuthReady(true);
-      if (currentUser) {
-        setIsAuthModalOpen(false);
-      }
-    });
-    return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    if (!user || !isAuthReady) return;
-
-    const userDocRef = doc(db, 'users', user.uid);
-    const unsubscribe = onSnapshot(userDocRef, (docSnap) => {
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        if (data.customLogo) {
-          setCustomLogo(data.customLogo);
-          localStorage.setItem('rjpgames_custom_logo', data.customLogo);
-        }
-        if (data.favorites) {
-          setFavorites(data.favorites);
-          localStorage.setItem('rjpgames_favorites', JSON.stringify(data.favorites));
-        }
-        if (data.theme) {
-          localStorage.setItem('custom_theme_id', data.theme);
-          if (data.customThemes) {
-            localStorage.setItem('custom_themes', data.customThemes);
-          }
-          // Apply theme
-          const savedThemes = localStorage.getItem('custom_themes');
-          const customThemes = savedThemes ? JSON.parse(savedThemes) : { ...defaultThemes };
-          const activeTheme = customThemes[data.theme] || defaultThemes.rjpgames;
-          
-          const root = document.documentElement;
-          root.style.setProperty('--bg', activeTheme.colors.bg);
-          root.style.setProperty('--text-primary', activeTheme.colors.textPrimary);
-          root.style.setProperty('--surface', activeTheme.colors.surface);
-          root.style.setProperty('--border', activeTheme.colors.border);
-          root.style.setProperty('--accent', activeTheme.colors.accent);
-          root.style.setProperty('--surface-hover', activeTheme.colors.surfaceHover);
-          
-          const hexToRgb = (hex: string) => {
-            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-            return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '255, 0, 0';
-          };
-          
-          const rgb = hexToRgb(activeTheme.colors.accent);
-          root.style.setProperty('--accent-glow', `rgba(${rgb}, 0.3)`);
-          root.style.setProperty('--accent-glow-dim', `rgba(${rgb}, 0.1)`);
-          root.dataset.theme = data.theme;
-        }
-        
-        // Update admin status based on role in database
-        const isAppOwner = user.email === 'darkfn1234567890@gmail.com' || user.email === 'whitecaleb888@gmail.com' || user.email === 'calebwhite2@chisd.net' || user.email === 'lily.smith7406@gmail.com' || user.email === 'pcidiagnosticbus@gmail.com';
-        const isSuperOwner = user.email === 'darkfn1234567890@gmail.com' || user.email === 'whitecaleb888@gmail.com';
-        setIsAdmin(isAppOwner || data.role === 'admin');
-        setIsSuperAdmin(isSuperOwner);
-      }
-    }, (err) => {
-      handleFirestoreError(err, OperationType.GET, `users/${user.uid}`);
-    });
-
-    return () => unsubscribe();
-  }, [user, isAuthReady]);
-
-  useEffect(() => {
-    const savedLogo = localStorage.getItem('rjpgames_custom_logo');
+    const savedLogo = localStorage.getItem('chillzone_custom_logo');
     if (savedLogo) setCustomLogo(savedLogo);
     
-    // Load custom theme
-    const currentThemeId = localStorage.getItem('custom_theme_id') || 'rjpgames';
-    const savedThemes = localStorage.getItem('custom_themes');
-    const customThemes = savedThemes ? JSON.parse(savedThemes) : { ...defaultThemes };
-    
-    // Merge new default themes if they don't exist in saved themes
-    Object.keys(defaultThemes).forEach(key => {
-      if (!customThemes[key]) {
-        customThemes[key] = defaultThemes[key];
-      }
-    });
-
-    const activeTheme = customThemes[currentThemeId] || defaultThemes.rjpgames;
-    
-    const root = document.documentElement;
-    root.style.setProperty('--bg', activeTheme.colors.bg);
-    root.style.setProperty('--text-primary', activeTheme.colors.textPrimary);
-    root.style.setProperty('--surface', activeTheme.colors.surface);
-    root.style.setProperty('--border', activeTheme.colors.border);
-    root.style.setProperty('--accent', activeTheme.colors.accent);
-    root.style.setProperty('--surface-hover', activeTheme.colors.surfaceHover);
-    
-    // Convert hex to rgba for glows
-    const hexToRgb = (hex: string) => {
-      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-      return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '255, 0, 0';
-    };
-    
-    const rgb = hexToRgb(activeTheme.colors.accent);
-    root.style.setProperty('--accent-glow', `rgba(${rgb}, 0.3)`);
-    root.style.setProperty('--accent-glow-dim', `rgba(${rgb}, 0.1)`);
-    root.dataset.theme = currentThemeId;
+    const savedTheme = localStorage.getItem('theme') || 'default';
+    document.documentElement.dataset.theme = savedTheme;
   }, []);
 
   useEffect(() => {
@@ -292,12 +79,6 @@ const App: React.FC = () => {
           setSelectedItem(null);
         } else if (selectedGame) {
           setSelectedGame(null);
-        } else if (isAuthModalOpen) {
-          setIsAuthModalOpen(false);
-        } else if (isAdminOpen) {
-          setIsAdminOpen(false);
-        } else if (isSuggestionModalOpen) {
-          setIsSuggestionModalOpen(false);
         }
       }
     };
@@ -315,41 +96,9 @@ const App: React.FC = () => {
     return () => window.removeEventListener('message', handleMessage);
   }, []);
 
-  useEffect(() => {
-    const path = activeCategory.replace(' ', '-');
-    if (window.location.pathname !== `/${path}`) {
-      window.history.pushState(null, '', `/${path}`);
-    }
-  }, [activeCategory]);
-  
-  useEffect(() => {
-    const handlePopState = () => {
-      const path = window.location.pathname.substring(1).toLowerCase();
-      const normalizedPath = path.replace('-', ' ') as Category;
-      const validCategories: Category[] = ['home', 'movies', 'tv shows', 'anime', 'manga', 'proxies', 'partners', 'dev', 'support', 'apps', 'browser', 'settings', 'music', 'games'];
-      
-      if (validCategories.includes(normalizedPath)) {
-        setActiveCategory(normalizedPath);
-      } else {
-        setActiveCategory('support');
-      }
-    };
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, []);
-
   const handleUpdateLogo = (newLogoUrl: string) => {
     setCustomLogo(newLogoUrl);
-    localStorage.setItem('rjpgames_custom_logo', newLogoUrl);
-    
-    // Sync to Firebase if logged in
-    if (user) {
-      updateDoc(doc(db, 'users', user.uid), {
-        customLogo: newLogoUrl
-      }).catch(err => {
-        handleFirestoreError(err, OperationType.UPDATE, `users/${user.uid}`);
-      });
-    }
+    localStorage.setItem('chillzone_custom_logo', newLogoUrl);
   };
 
   const handleOpenDetails = (item: LibraryItem, category: string) => {
@@ -362,28 +111,13 @@ const App: React.FC = () => {
     }
   };
 
-  const onToggleFavorite = async (item: FavoriteItem) => {
-    let newFavorites: FavoriteItem[];
+  const onToggleFavorite = (item: FavoriteItem) => {
     setFavorites(prev => {
       const exists = prev.find(f => f.id === item.id);
       if (exists) {
-        newFavorites = prev.filter(f => f.id !== item.id);
-      } else {
-        newFavorites = [...prev, item];
+        return prev.filter(f => f.id !== item.id);
       }
-      
-      localStorage.setItem('rjpgames_favorites', JSON.stringify(newFavorites));
-      
-      // Sync to Firebase if logged in
-      if (user) {
-        updateDoc(doc(db, 'users', user.uid), {
-          favorites: newFavorites
-        }).catch(err => {
-          handleFirestoreError(err, OperationType.UPDATE, `users/${user.uid}`);
-        });
-      }
-      
-      return newFavorites;
+      return [...prev, item];
     });
   };
 
@@ -426,15 +160,90 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-bg text-text-primary">
-      <ScrambleEffect />
-      <SiteAnnouncements />
       <div id="app" className="fixed inset-0 flex flex-col overflow-hidden bg-bg text-text-primary">
+        {/* Donation Banner */}
+        <div className="bg-black text-white py-2 px-4 text-sm font-bold z-[60] relative flex items-center shadow-lg border-b border-white/10 overflow-hidden">
+          <div className="flex-1 overflow-hidden relative h-6 flex items-center">
+            <div className="animate-marquee absolute w-full text-left">
+              Don't Forget You Can Pay For Custom Movies, Animes, Tv Shows, OR WTV U Want!
+            </div>
+          </div>
+          <button 
+            onClick={() => setActiveCategory('donate')} 
+            className="bg-white/10 hover:bg-white/20 border border-white/20 px-4 py-1 rounded-full text-xs uppercase tracking-wider transition-colors shrink-0 ml-4 z-10 relative"
+          >
+            Donate
+          </button>
+        </div>
+
         {/* Background glows */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
           <div className="absolute -top-40 -right-40 w-[700px] h-[700px] rounded-full opacity-60" style={{ background: 'var(--accent-glow-dim)', filter: 'blur(160px)', transform: 'translateZ(0)' }}></div>
           <div className="absolute top-1/2 left-1/4 w-[500px] h-[500px] rounded-full opacity-30" style={{ background: 'rgba(37,99,235,0.05)', filter: 'blur(130px)', transform: 'translateZ(0)' }}></div>
         </div>
 
+        <AnimatePresence>
+          {selectedGame && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-xl p-4 md:p-8"
+            >
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                className="relative w-full max-w-6xl aspect-video bg-[#0f0f0f] rounded-3xl overflow-hidden border border-white/10 shadow-2xl flex flex-col"
+              >
+                <div className="flex items-center justify-between p-4 border-b border-white/5 bg-black/40 backdrop-blur-md">
+                  <div className="flex items-center gap-4">
+                    <div className={`p-2 rounded-xl bg-gradient-to-br ${selectedGame.color} shadow-lg`}>
+                      <Gamepad2 className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-white leading-tight">{selectedGame.title}</h3>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500">{selectedGame.system} • {selectedGame.year}</p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => setSelectedGame(null)}
+                    className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-neutral-400 hover:text-white transition-all border border-white/5"
+                  >
+                    <X size={24} />
+                  </button>
+                </div>
+                
+                <div className="flex-1 bg-black relative">
+                  {GAME_PAYLOADS[selectedGame.id] ? (
+                    <iframe 
+                      srcDoc={GAME_PAYLOADS[selectedGame.id].customHtml}
+                      className="w-full h-full border-none"
+                      title={selectedGame.title}
+                      allow="autoplay; fullscreen; keyboard"
+                    />
+                  ) : selectedGame.link ? (
+                    <iframe 
+                      srcDoc={getEmulatorHtml(selectedGame)}
+                      className="w-full h-full border-none"
+                      title={selectedGame.title}
+                      allow="autoplay; fullscreen; keyboard"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8">
+                      <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mb-6">
+                        <ShieldAlert className="w-10 h-10 text-yellow-500" />
+                      </div>
+                      <h3 className="text-2xl font-bold text-white mb-2">Payload Not Found</h3>
+                      <p className="text-neutral-500 max-w-md italic">"The digital signature for this title is missing from our archives. Please check back later."</p>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        
         <div className="relative z-20 flex items-center justify-between p-4 bg-bg/80 backdrop-blur-md border-b border-white/5">
             <button 
                 onClick={() => setIsSidebarVisible(!isSidebarVisible)}
@@ -442,18 +251,15 @@ const App: React.FC = () => {
             >
                 {isSidebarVisible ? <X size={20} /> : <LayoutGrid size={20} />}
             </button>
-            <div className="text-xs text-text-secondary">© 2026 RJ.P Games</div>
+            <div className="text-xs text-text-secondary">© 2026 ChillZone</div>
         </div>
 
-        {!selectedGame && !isAuthModalOpen && !isAdminOpen && (
+        {isSidebarVisible && !selectedGame && (
             <Sidebar 
             activeCategory={activeCategory} 
             onSelect={(cat) => { setActiveCategory(cat); setSearchQuery(''); setIsSettingsOpen(false); }} 
             logoUrl={customLogo} 
             onLogoChange={handleUpdateLogo}
-            isAdmin={isAdmin}
-            isChatCategory={activeCategory === 'chat' || activeCategory === 'admin-chat'}
-            isSidebarVisible={isSidebarVisible}
             />
         )}
         
@@ -463,36 +269,12 @@ const App: React.FC = () => {
               <DateTimeWidget />
             </div>
             <div className="flex items-center gap-3 relative">
-              {isAdmin && (
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setIsAdminOpen(true)}
-                  className="w-10 h-10 flex items-center justify-center rounded-xl bg-accent/10 border border-accent/20 text-accent hover:bg-accent/20 transition-all duration-300"
-                  title="Admin Dashboard"
-                >
-                  <ShieldCheck size={18} />
-                </motion.button>
-              )}
-
-              {user && (
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setIsSuggestionModalOpen(true)}
-                  className="w-10 h-10 flex items-center justify-center rounded-xl bg-surface-hover border border-white/5 text-text-secondary hover:text-white hover:border-white/20 transition-all duration-300"
-                  title="Suggestion Bin"
-                >
-                  <Send size={18} />
-                </motion.button>
-              )}
-
               <div className="relative">
                 <motion.button 
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setIsUpdateLogOpen(!isUpdateLogOpen)} 
-                  className={`w-10 h-10 flex items-center justify-center rounded-xl border transition-all duration-300 relative ${
+                  className={`w-10 h-10 flex items-center justify-center rounded-xl border transition-all duration-300 ${
                     isUpdateLogOpen 
                       ? 'bg-accent border-accent text-white' 
                       : 'bg-surface-hover border-white/5 text-text-secondary hover:text-white hover:border-white/20'
@@ -521,23 +303,13 @@ const App: React.FC = () => {
                 </AnimatePresence>
               </div>
 
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={user ? logout : () => setIsAuthModalOpen(true)}
-                className="w-10 h-10 flex items-center justify-center rounded-xl bg-surface-hover border border-white/5 text-text-secondary hover:text-white hover:border-white/20 transition-all duration-300"
-                title={user ? "Logout" : "Login / Sign Up"}
-              >
-                {user ? <LogOut size={18} /> : <LogIn size={18} />}
-              </motion.button>
-
               <motion.a 
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                href="https://discord.gg/8Xw3PtCHUz" 
+                href="http://discord.gg/cuHARsXESW" 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="w-10 h-10 flex items-center justify-center rounded-xl bg-surface-hover border border-white/5 text-text-secondary hover:text-[#5865F2] hover:border-[#5865F2]/50 transition-all duration-300 relative"
+                className="w-10 h-10 flex items-center justify-center rounded-xl bg-surface-hover border border-white/5 text-text-secondary hover:text-[#5865F2] hover:border-[#5865F2]/50 transition-all duration-300"
                 title="Discord"
               >
                 <DiscordIcon size={18} />
@@ -547,7 +319,7 @@ const App: React.FC = () => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setIsSettingsOpen(!isSettingsOpen)} 
-                  className={`w-10 h-10 flex items-center justify-center rounded-xl border transition-all duration-300 relative ${
+                  className={`w-10 h-10 flex items-center justify-center rounded-xl border transition-all duration-300 ${
                     isSettingsOpen 
                       ? 'bg-accent border-accent text-white' 
                       : 'bg-surface-hover border-white/5 text-text-secondary hover:text-white hover:border-white/20'
@@ -572,7 +344,7 @@ const App: React.FC = () => {
                         initial={{ opacity: 0, scale: 0.95, y: 10, x: -20 }}
                         animate={{ opacity: 1, scale: 1, y: 0, x: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 10, x: -20 }}
-                        className="absolute top-14 right-0 z-50 bg-surface border border-surface-hover rounded-2xl shadow-2xl overflow-hidden w-[400px] max-h-[80vh] flex flex-col"
+                        className="absolute top-14 right-0 z-50 bg-surface border border-surface-hover rounded-2xl shadow-2xl overflow-hidden w-[400px] max-h-[80vh] overflow-y-auto custom-scrollbar"
                       >
                         <Settings onClose={() => setIsSettingsOpen(false)} />
                       </motion.div>
@@ -655,7 +427,7 @@ const App: React.FC = () => {
                             {t('Devs')}
                           </h1>
                           <p className="text-text-muted text-lg font-medium max-w-2xl mx-auto">
-                            {t('The team behind RJ.P Games.')} <span className="text-accent font-bold">{t('Click on our cards')}</span> {t('to visit our personal sites and socials!')}
+                            {t('The team behind ChillZone.')} <span className="text-accent font-bold">{t('Click on our cards')}</span> {t('to visit our personal sites and socials!')}
                           </p>
                         </div>
                         <section>
@@ -684,11 +456,7 @@ const App: React.FC = () => {
                               >
                                 <div className="w-40 h-40 mx-auto mb-10 rounded-[40px] overflow-hidden border-2 border-surface-hover group-hover:border-accent/40 transition-all duration-700 shadow-inner relative bg-bg">
                                   {staff.img ? (
-                                    <img 
-                                      src={typeof staff.img === 'string' && staff.img ? staff.img : 'https://picsum.photos/seed/avatar/200/200'} 
-                                      className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" 
-                                      referrerPolicy="no-referrer"
-                                    />
+                                    <img src={staff.img} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
                                   ) : (
                                     <div className="flex items-center justify-center h-full text-text-muted"><Users size={48} /></div>
                                   )}
@@ -789,100 +557,6 @@ const App: React.FC = () => {
                         setSelectedGame={setSelectedGame} 
                       />
                     )}
-                    {activeCategory === 'chat' && (
-                      <div className="mt-20 max-w-[1600px] mx-auto pb-40 px-4 relative">
-                        <motion.div 
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          className="text-center mb-16"
-                        >
-                          <h1 className="text-7xl font-black italic uppercase tracking-tighter text-white mb-4">Community Chat</h1>
-                          <p className="text-text-secondary max-w-2xl mx-auto font-medium">Connect with other members of RJ.P Games. Share your thoughts, request content, and hang out with the community.</p>
-                        </motion.div>
-                        
-                        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 relative z-10">
-                          <div className="lg:col-span-3">
-                            {user ? <ChatRoom isAdmin={isAdmin} isSuperAdmin={isSuperAdmin} /> : <div className="text-center py-20 text-text-muted">Please sign up to access the chat room.</div>}
-                          </div>
-                          <div className="space-y-6">
-                            <div className="bg-surface border border-white/5 rounded-2xl p-6 shadow-xl">
-                              <h3 className="text-xl font-black italic uppercase tracking-tighter text-white mb-4 flex items-center gap-2">
-                                <ShieldCheck className="text-accent" size={20} />
-                                Chat Rules
-                              </h3>
-                              <ul className="space-y-3 text-sm text-text-secondary font-medium">
-                                <li className="flex gap-2">
-                                  <span className="text-accent font-bold">01.</span>
-                                  Be respectful to all members.
-                                </li>
-                                <li className="flex gap-2">
-                                  <span className="text-accent font-bold">02.</span>
-                                  No spamming or excessive caps.
-                                </li>
-                                <li className="flex gap-2">
-                                  <span className="text-accent font-bold">03.</span>
-                                  No NSFW content or links.
-                                </li>
-                                <li className="flex gap-2">
-                                  <span className="text-accent font-bold">04.</span>
-                                  No self-promotion or advertising.
-                                </li>
-                                <li className="flex gap-2">
-                                  <span className="text-accent font-bold">05.</span>
-                                  Listen to the moderators.
-                                </li>
-                              </ul>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-accent/5 rounded-full blur-[120px] pointer-events-none"></div>
-                        <div className="absolute -bottom-40 -right-40 w-[600px] h-[600px] bg-accent/5 rounded-full blur-[120px] pointer-events-none"></div>
-                      </div>
-                    )}
-                    {activeCategory === 'admin-chat' && (
-                      <div className="mt-20 max-w-[1600px] mx-auto pb-40 px-4 relative">
-                        <motion.div 
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          className="text-center mb-16"
-                        >
-                          <h1 className="text-7xl font-black italic uppercase tracking-tighter text-white mb-4">Staff Lounge</h1>
-                          <p className="text-text-secondary max-w-2xl mx-auto font-medium">Private discussion area for RJ.P Games staff members. Coordinate updates and manage the site.</p>
-                        </motion.div>
-                        
-                        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 relative z-10">
-                          <div className="lg:col-span-3">
-                            {isAdmin ? <ChatRoom collectionName="admin_chat" isAdmin={isAdmin} isSuperAdmin={isSuperAdmin} /> : <div className="text-center py-20 text-text-muted">Authorized personnel only.</div>}
-                          </div>
-                          <div className="space-y-6">
-                            <div className="bg-surface border border-white/5 rounded-2xl p-6 shadow-xl">
-                              <h3 className="text-xl font-black italic uppercase tracking-tighter text-white mb-4 flex items-center gap-2">
-                                <ShieldCheck className="text-accent" size={20} />
-                                Staff Protocol
-                              </h3>
-                              <ul className="space-y-3 text-sm text-text-secondary font-medium">
-                                <li className="flex gap-2">
-                                  <span className="text-accent font-bold">01.</span>
-                                  Keep discussions professional.
-                                </li>
-                                <li className="flex gap-2">
-                                  <span className="text-accent font-bold">02.</span>
-                                  Do not share staff info.
-                                </li>
-                                <li className="flex gap-2">
-                                  <span className="text-accent font-bold">03.</span>
-                                  Report all site issues here.
-                                </li>
-                              </ul>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-accent/5 rounded-full blur-[120px] pointer-events-none"></div>
-                        <div className="absolute -bottom-40 -right-40 w-[600px] h-[600px] bg-accent/5 rounded-full blur-[120px] pointer-events-none"></div>
-                      </div>
-                    )}
                     {activeCategory === 'movies' && <LibrarySection title={t('Movies')} items={MOVIES_DATA} category="movie" searchQuery="" onOpenDetails={handleOpenDetails} showSearch={true} />}
                     {activeCategory === 'tv shows' && <LibrarySection title={t('TV Shows')} items={TV_DATA} category="tv" searchQuery="" onOpenDetails={handleOpenDetails} showSearch={true} />}
                     {activeCategory === 'anime' && <LibrarySection title={t('Animes')} items={ANIME_DATA} category="anime" searchQuery="" onOpenDetails={handleOpenDetails} showSearch={true} />}
@@ -971,11 +645,7 @@ const App: React.FC = () => {
               )}
               {selectedItem.showPlayer ? null : (
                 <div className="w-full md:w-2/5 aspect-[2/3] md:h-auto relative overflow-hidden group/modal-img bg-bg shrink-0">
-                  <img 
-                    src={typeof selectedItem.item.img === 'string' && selectedItem.item.img ? selectedItem.item.img : 'https://picsum.photos/seed/poster/400/600'} 
-                    className="w-full h-full object-cover transition-transform duration-[2000ms] group-hover/modal-img:scale-110" 
-                    referrerPolicy="no-referrer"
-                  />
+                  <img src={selectedItem.item.img} className="w-full h-full object-cover transition-transform duration-[2000ms] group-hover/modal-img:scale-110" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
                 </div>
               )}
@@ -1054,120 +724,6 @@ const App: React.FC = () => {
           </div>
             </motion.div>
           </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Modals & Overlays */}
-      <AnimatePresence>
-        {isAuthModalOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setIsAuthModalOpen(false)}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-xl p-4 md:p-8"
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-md bg-[#0a0a0a] rounded-3xl overflow-hidden border border-white/10 shadow-2xl"
-            >
-              <AuthModal onClose={() => setIsAuthModalOpen(false)} />
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {isAdminOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setIsAdminOpen(false)}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-xl p-4 md:p-8"
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-5xl h-[80vh] bg-[#0f0f0f] rounded-3xl overflow-hidden border border-white/10 shadow-2xl"
-            >
-              <AdminDashboard onClose={() => setIsAdminOpen(false)} isSuperAdmin={isSuperAdmin} />
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {selectedGame && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setSelectedGame(null)}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-xl p-4 md:p-8"
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-6xl aspect-video bg-[#0f0f0f] rounded-3xl overflow-hidden border border-white/10 shadow-2xl flex flex-col"
-            >
-              <div className="flex items-center justify-between p-4 border-b border-white/5 bg-black/40 backdrop-blur-md">
-                <div className="flex items-center gap-4">
-                  <div className={`p-2 rounded-xl bg-gradient-to-br ${selectedGame.color} shadow-lg`}>
-                    <Gamepad2 className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold text-white leading-tight">{selectedGame.title}</h3>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500">{selectedGame.system} • {selectedGame.year}</p>
-                  </div>
-                </div>
-                <button 
-                  onClick={() => setSelectedGame(null)}
-                  className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-neutral-400 hover:text-white transition-all border border-white/5"
-                >
-                  <X size={24} />
-                </button>
-              </div>
-              
-              <div className="flex-1 bg-black relative">
-                {GAME_PAYLOADS[selectedGame.id] ? (
-                  <iframe 
-                    srcDoc={GAME_PAYLOADS[selectedGame.id].customHtml}
-                    className="w-full h-full border-none"
-                    title={selectedGame.title}
-                    allow="autoplay; fullscreen; keyboard"
-                  />
-                ) : selectedGame.link ? (
-                  <iframe 
-                    srcDoc={getEmulatorHtml(selectedGame)}
-                    className="w-full h-full border-none"
-                    title={selectedGame.title}
-                    allow="autoplay; fullscreen; keyboard"
-                  />
-                ) : (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8">
-                    <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mb-6">
-                      <ShieldAlert className="w-10 h-10 text-yellow-500" />
-                    </div>
-                    <h3 className="text-2xl font-bold text-white mb-2">Payload Not Found</h3>
-                    <p className="text-neutral-500 max-w-md italic">"The digital signature for this title is missing from our archives. Please check back later."</p>
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-      <AnimatePresence>
-        {isSuggestionModalOpen && (
-          <SuggestionModal onClose={() => setIsSuggestionModalOpen(false)} />
         )}
       </AnimatePresence>
     </div>

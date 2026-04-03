@@ -3,13 +3,12 @@ import { Search, Play, Pause, SkipBack, SkipForward, Repeat, Volume2, Music, Loa
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Track {
-  id: string | number;
+  id: number;
   title: string;
   artist: string;
   album: string;
   cover: string;
   streamUrl?: string;
-  source?: string;
 }
 
 const containerVariants = {
@@ -40,39 +39,39 @@ const MusicPlayer: React.FC = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const currentTrack = currentTrackIndex !== null ? tracks[currentTrackIndex] : null;
 
-  // Debugging src prop
-  useEffect(() => {
-    if (currentTrack?.cover !== undefined && typeof currentTrack?.cover !== 'string' && currentTrack?.cover !== null) {
-      console.warn('MusicPlayer: currentTrack.cover is not a string:', currentTrack.cover, 'for track:', currentTrack.title);
-    }
-  }, [currentTrack]);
-
-  useEffect(() => {
-    if (tracks.length > 0) {
-      tracks.forEach((track, idx) => {
-        if (track.cover !== undefined && typeof track.cover !== 'string' && track.cover !== null) {
-          console.warn(`MusicPlayer: track[${idx}].cover is not a string:`, track.cover, 'for track:', track.title);
-        }
-      });
-    }
-  }, [tracks]);
-
   const searchSongs = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!searchQuery.trim()) return;
 
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/music/youtube/search?s=${encodeURIComponent(searchQuery)}`);
-      const contentType = response.headers.get('content-type');
+      const response = await fetch(`https://api.monochrome.tf/search?s=${encodeURIComponent(searchQuery)}`);
       
-      if (response.ok && contentType && contentType.includes('application/json')) {
-        const data = await response.json();
-        handleSearchResults(data);
-      } else {
-        const text = await response.text();
-        console.error(`YouTube Music search failed with status ${response.status}. Content-Type: ${contentType}. Body snippet: ${text.substring(0, 100)}`);
-        throw new Error(`Music search failed with status ${response.status}`);
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (!data.data || !data.data.items) {
+        console.error('Invalid API response:', data);
+        setTracks([]);
+        return;
+      }
+
+      const formattedTracks: Track[] = data.data.items.map((item: any) => ({
+        id: item.id,
+        title: item.title,
+        artist: item.artist.name,
+        album: item.album.title,
+        cover: `https://resources.tidal.com/images/${item.album.cover.replace(/-/g, '/')}/640x640.jpg`,
+        streamUrl: undefined // Will be fetched on play
+      }));
+
+      setTracks(formattedTracks);
+      if (formattedTracks.length > 0 && currentTrackIndex === null) {
+        // Don't auto-play on search, just show results
+        // setCurrentTrackIndex(0); 
       }
     } catch (error) {
       console.error('Error searching music:', error);
@@ -81,36 +80,12 @@ const MusicPlayer: React.FC = () => {
     }
   };
 
-  const handleSearchResults = (data: any) => {
-    console.log('MusicPlayer: handleSearchResults data:', data);
-    let formattedTracks: Track[] = [];
-
-    // Handle YouTube Music response
-    if (data.data && Array.isArray(data.data.items)) {
-      formattedTracks = data.data.items.map((item: any) => ({
-        id: item.videoId,
-        title: item.title,
-        artist: item.artist?.name || item.artists?.[0]?.name || 'Unknown Artist',
-        album: item.album?.name || 'Unknown Album',
-        cover: item.thumbnail?.[item.thumbnail.length - 1]?.url || '',
-        streamUrl: undefined,
-        source: 'youtube'
-      }));
-    } 
-
-    setTracks(formattedTracks);
-  };
-
-  const fetchStreamUrl = async (trackId: string | number, source: string = 'youtube') => {
+  const fetchStreamUrl = async (trackId: number) => {
     try {
-      const response = await fetch(`/api/music/youtube/track/${trackId}`);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch track info: ${response.status}`);
-      }
+      const response = await fetch(`https://api.monochrome.tf/track?id=${trackId}&quality=HIGH`);
       const data = await response.json();
-      console.log('MusicPlayer: fetchStreamUrl data:', data);
-      
-      return data.streamingData?.formats?.[0]?.url || data.url || null;
+      const manifest = JSON.parse(atob(data.data.manifest));
+      return manifest.urls[0];
     } catch (error) {
       console.error('Error fetching stream URL:', error);
       return null;
@@ -119,46 +94,26 @@ const MusicPlayer: React.FC = () => {
 
   const playTrack = async (index: number) => {
     const track = tracks[index];
-    
-    // Stop current playback if any
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.src = '';
-    }
-    setIsPlaying(false);
-
     if (!track.streamUrl) {
       setIsLoading(true);
-      const url = await fetchStreamUrl(track.id, track.source);
+      const url = await fetchStreamUrl(track.id);
       if (url) {
         const newTracks = [...tracks];
         newTracks[index] = { ...track, streamUrl: url };
         setTracks(newTracks);
+        // Update current track ref indirectly by state update, but we need to play it now
         if (audioRef.current) {
             audioRef.current.src = url;
-            try {
-                await audioRef.current.play();
-                setIsPlaying(true);
-            } catch (e) {
-                console.error("Playback failed", e);
-                setIsPlaying(false);
-            }
+            audioRef.current.play().catch(e => console.error("Playback failed", e));
+            setIsPlaying(true);
         }
-      } else {
-        console.error("No stream URL found for track");
-        // Optionally: show a toast notification here
       }
       setIsLoading(false);
     } else {
        if (audioRef.current) {
           audioRef.current.src = track.streamUrl;
-          try {
-              await audioRef.current.play();
-              setIsPlaying(true);
-          } catch (e) {
-              console.error("Playback failed", e);
-              setIsPlaying(false);
-          }
+          audioRef.current.play().catch(e => console.error("Playback failed", e));
+          setIsPlaying(true);
        }
     }
     setCurrentTrackIndex(index);
@@ -251,10 +206,9 @@ const MusicPlayer: React.FC = () => {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
                   transition={{ duration: 0.5 }}
-                  src={typeof currentTrack.cover === 'string' && currentTrack.cover ? currentTrack.cover : 'https://picsum.photos/seed/music/200/200'} 
+                  src={currentTrack.cover} 
                   alt={currentTrack.title} 
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  referrerPolicy="no-referrer"
                 />
               ) : (
                 <motion.div 
@@ -407,12 +361,7 @@ const MusicPlayer: React.FC = () => {
                         className={`w-full flex items-center gap-4 p-4 hover:bg-white/5 transition-colors group ${currentTrackIndex === index ? 'bg-white/5' : ''}`}
                       >
                         <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0 relative">
-                          <img 
-                            src={typeof track.cover === 'string' && track.cover ? track.cover : 'https://picsum.photos/seed/music/200/200'} 
-                            alt={track.title} 
-                            className="w-full h-full object-cover" 
-                            referrerPolicy="no-referrer"
-                          />
+                          <img src={track.cover} alt={track.title} className="w-full h-full object-cover" />
                           {currentTrackIndex === index && isPlaying && (
                             <div className="absolute inset-0 bg-bg/40 flex items-center justify-center">
                               <div className="flex gap-0.5 items-end h-4">
@@ -460,7 +409,6 @@ const MusicPlayer: React.FC = () => {
         ref={audioRef} 
         onTimeUpdate={handleTimeUpdate}
         onEnded={handleEnded}
-        onError={(e) => console.error("Audio playback error:", e)}
         className="hidden"
       />
 

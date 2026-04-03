@@ -7,7 +7,7 @@ export const getWikiIntelligence = async (title: string) => {
   if (!title || title.length < 2) return null;
 
   try {
-    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || process.env.API_KEY || '' });
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: `Search for real-world information about "${title}". 
@@ -40,14 +40,14 @@ export const getQueryAestheticDescription = async (query: string) => {
   if (!query || query.length < 3) return null;
 
   try {
-    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || process.env.API_KEY || '' });
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: `Generate a short, 1-sentence cinematic theme for this search: "${query}". 
       Example: "Uncovering the secrets of the digital frontier."
       Make it mysterious and atmospheric.`,
       config: {
-        systemInstruction: "You are the AI Librarian of RJ.P Games. Your voice is dark, futuristic, and slightly mysterious.",
+        systemInstruction: "You are the AI Librarian of ChillZone. Your voice is dark, futuristic, and slightly mysterious.",
         temperature: 0.7,
         maxOutputTokens: 50,
       }
@@ -67,7 +67,7 @@ export const translateText = async (text: string, targetLanguage: string) => {
   if (!text || !targetLanguage || targetLanguage === 'en-US') return text;
 
   try {
-    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || process.env.API_KEY || '' });
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: `Translate the following text into ${targetLanguage}. Only return the translated text, nothing else.

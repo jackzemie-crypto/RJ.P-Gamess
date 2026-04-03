@@ -1,19 +1,19 @@
 <div align="center">
-  <img src="https://files.catbox.moe/5mijpj.png" width="120" height="120" alt="RJ.P Games Logo" />
+  <img src="https://raw.githubusercontent.com/ohsols/czonev2/main/logo.svg" width="120" height="120" alt="ChillZone Logo" />
   
-  # RJ.P GAMES
+  # CHILLZONE
   
   **Your all-in-one entertainment hub.**
   
   [![Live Site](https://img.shields.io/badge/Live%20Site-chillz0ne.dev-ff2644?style=for-the-badge)](https://chillz0ne.dev)
-  [![Discord](https://img.shields.io/badge/Discord-Join-5865F2?style=for-the-badge&logo=discord)](https://discord.gg/8Xw3PtCHUz)
+  [![Discord](https://img.shields.io/badge/Discord-Join-5865F2?style=for-the-badge&logo=discord)](http://discord.gg/cuHARsXESW)
 </div>
 
 ---
 
-## What is RJ.P Games?
+## What is ChillZone?
 
-RJ.P Games is a personal media library and entertainment hub. Browse movies, TV shows, anime, manga, listen to music, and find proxies all in one sleek dark interface.
+ChillZone is a personal media library and entertainment hub. Browse movies, TV shows, anime, manga, listen to music, and find proxies all in one sleek dark interface.
 
 ## Features
 
