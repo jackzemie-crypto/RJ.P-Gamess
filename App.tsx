@@ -199,7 +199,8 @@ const App: React.FC = () => {
   useEffect(() => {
     if (!user || !isAuthReady || hasOpenedUpdateLog) return;
 
-    setIsUpdateLogOpen(true);
+    // Removed automatic update log opening
+    // setIsUpdateLogOpen(true);
     setHasOpenedUpdateLog(true);
   }, [user, isAuthReady, hasOpenedUpdateLog]);
 
