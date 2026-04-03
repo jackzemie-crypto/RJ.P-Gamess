@@ -62,7 +62,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
             {mode === 'login' ? 'Welcome Back' : 'Create Account'}
           </h2>
           <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500">
-            {mode === 'login' ? 'Sign in to your account' : 'Join the RJ.P Games community'}
+            {mode === 'login' ? 'Sign in to your account' : 'Join the ChillZone community'}
           </p>
         </div>
         <button onClick={onClose} className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-neutral-400 hover:text-white transition-all">

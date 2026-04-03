@@ -13,9 +13,9 @@ import { MOVIES_DATA, ANIME_DATA, MANGA_DATA, TV_DATA, STAFF_DATA, PARTNERS_DATA
 import { GAME_PAYLOADS } from './gamePayloads';
 import { getEmulatorHtml } from './services/emulatorService';
 import { useLanguage } from './context/LanguageContext';
-import { Search, X, Film, Sparkles, BookOpen, Tv, SearchX, PlayCircle, Star, Globe, Users, ExternalLink, ShieldAlert, Zap, MessageSquare, Activity, Loader2, Book, AlertTriangle, Settings as SettingsIcon, GitCommit, ChevronDown, LayoutGrid, Gamepad2 } from 'lucide-react';
+import { Search, X, Film, Sparkles, BookOpen, Tv, SearchX, PlayCircle, Star, Globe, Users, ExternalLink, ShieldAlert, Zap, MessageSquare, Loader2, Book, AlertTriangle, Settings as SettingsIcon, GitCommit, ChevronDown, LayoutGrid, Gamepad2 } from 'lucide-react';
 
-const DEFAULT_LOGO = "https://lh7-rt.googleusercontent.com/sitesz/AClOY7psM7n5cC2oRAQVLVss3LsgYFKWwE-KzTjGQvDYtnnp1f1j-Szl1OH6r1pZTXpsw0t_1es0N4P9E2cBl4Oqs-lOwNJdAt3H5CiGxGZKfBTzaYq_ybiI1qd2dWXWu_GRWMqLDD_3BL9tkNhJBNJhjBuuQWyvP1B19h6v0fblyHBwfxs-94c7?key=IannGxLsV9P5UfJ0NHPqqQ";
+const DEFAULT_LOGO = "https://files.catbox.moe/4wz029.svg";
 
 const DiscordIcon = ({ size = 20, className = "" }: { size?: number, className?: string }) => (
   <svg 
@@ -50,7 +50,7 @@ const TranslatedText: React.FC<{ text: string }> = ({ text }) => {
 };
 
 const App: React.FC = () => {
-  const [activeCategory, setActiveCategory] = useState<Category>('donate');
+  const [activeCategory, setActiveCategory] = useState<Category>('movies');
   const [searchQuery, setSearchQuery] = useState('');
   const [proxySearch, setProxySearch] = useState('');
   const [customLogo, setCustomLogo] = useState<string>(DEFAULT_LOGO);
@@ -63,7 +63,7 @@ const App: React.FC = () => {
   const { t } = useLanguage();
 
   useEffect(() => {
-    const savedLogo = localStorage.getItem('chillzone_custom_logo');
+    const savedLogo = localStorage.getItem('rjpgames_custom_logo');
     if (savedLogo) setCustomLogo(savedLogo);
     
     const savedTheme = localStorage.getItem('theme') || 'default';
@@ -98,7 +98,7 @@ const App: React.FC = () => {
 
   const handleUpdateLogo = (newLogoUrl: string) => {
     setCustomLogo(newLogoUrl);
-    localStorage.setItem('chillzone_custom_logo', newLogoUrl);
+    localStorage.setItem('rjpgames_custom_logo', newLogoUrl);
   };
 
   const handleOpenDetails = (item: LibraryItem, category: string) => {
@@ -161,21 +161,6 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-bg text-text-primary">
       <div id="app" className="fixed inset-0 flex flex-col overflow-hidden bg-bg text-text-primary">
-        {/* Donation Banner */}
-        <div className="bg-black text-white py-2 px-4 text-sm font-bold z-[60] relative flex items-center shadow-lg border-b border-white/10 overflow-hidden">
-          <div className="flex-1 overflow-hidden relative h-6 flex items-center">
-            <div className="animate-marquee absolute w-full text-left">
-              Don't Forget You Can Pay For Custom Movies, Animes, Tv Shows, OR WTV U Want!
-            </div>
-          </div>
-          <button 
-            onClick={() => setActiveCategory('donate')} 
-            className="bg-white/10 hover:bg-white/20 border border-white/20 px-4 py-1 rounded-full text-xs uppercase tracking-wider transition-colors shrink-0 ml-4 z-10 relative"
-          >
-            Donate
-          </button>
-        </div>
-
         {/* Background glows */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
           <div className="absolute -top-40 -right-40 w-[700px] h-[700px] rounded-full opacity-60" style={{ background: 'var(--accent-glow-dim)', filter: 'blur(160px)', transform: 'translateZ(0)' }}></div>
@@ -251,7 +236,7 @@ const App: React.FC = () => {
             >
                 {isSidebarVisible ? <X size={20} /> : <LayoutGrid size={20} />}
             </button>
-            <div className="text-xs text-text-secondary">© 2026 ChillZone</div>
+            <div className="text-xs text-text-secondary">© 2026 RJ.P Games</div>
         </div>
 
         {isSidebarVisible && !selectedGame && (
@@ -303,17 +288,6 @@ const App: React.FC = () => {
                 </AnimatePresence>
               </div>
 
-              <motion.a 
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                href="http://discord.gg/cuHARsXESW" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="w-10 h-10 flex items-center justify-center rounded-xl bg-surface-hover border border-white/5 text-text-secondary hover:text-[#5865F2] hover:border-[#5865F2]/50 transition-all duration-300"
-                title="Discord"
-              >
-                <DiscordIcon size={18} />
-              </motion.a>
               <div className="relative">
                 <motion.button 
                   whileHover={{ scale: 1.05 }}
@@ -427,7 +401,7 @@ const App: React.FC = () => {
                             {t('Devs')}
                           </h1>
                           <p className="text-text-muted text-lg font-medium max-w-2xl mx-auto">
-                            {t('The team behind ChillZone.')} <span className="text-accent font-bold">{t('Click on our cards')}</span> {t('to visit our personal sites and socials!')}
+                            {t('The team behind RJ.P Games.')} <span className="text-accent font-bold">{t('Click on our cards')}</span> {t('to visit our personal sites and socials!')}
                           </p>
                         </div>
                         <section>
@@ -475,79 +449,6 @@ const App: React.FC = () => {
                           </motion.div>
                         </section>
                       </motion.div>
-                    )}
-
-                    {activeCategory === 'donate' && (
-                      <div className="py-12">
-                        <section className="bg-bg rounded-[48px] p-12 md:p-20 border border-surface-hover text-center relative overflow-hidden">
-                          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1639322537228-f710d846310a?q=80&w=2000')] bg-cover bg-center opacity-10 blur-sm"></div>
-                          <div className="relative z-10">
-                            <motion.div 
-                              initial={{ scale: 0 }}
-                              animate={{ scale: 1 }}
-                              transition={{ type: "spring", stiffness: 200, damping: 20 }}
-                              className="w-24 h-24 bg-bg rounded-full flex items-center justify-center mx-auto mb-8 border border-accent/30 shadow-[0_0_40px_var(--accent-glow)]"
-                            >
-                              <Activity size={48} className="text-accent" />
-                            </motion.div>
-                            <motion.h1 
-                              initial={{ opacity: 0, y: 20 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: 0.1 }}
-                              className="text-5xl md:text-8xl font-black uppercase italic tracking-tighter text-white mb-8"
-                            >
-                              {t('Donate')}
-                            </motion.h1>
-                            <motion.p 
-                              initial={{ opacity: 0, y: 20 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: 0.2 }}
-                              className="text-text-muted text-xl max-w-2xl mx-auto mb-12 font-medium"
-                            >
-                              {t('Click Which Ever Donation App U Want To Donate On')}
-                            </motion.p>
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-                              <motion.a 
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.3 }}
-                                href="https://cash.app/$7yari" target="_blank" rel="noopener noreferrer" className="bg-bg border border-surface-hover p-8 rounded-3xl hover:border-[#00d632] transition-all duration-300 group flex flex-col items-center text-center"
-                              >
-                                <img src="https://cdn.simpleicons.org/cashapp/white" alt="Cash App" className="h-12 w-12 mb-4 object-contain" referrerPolicy="no-referrer" />
-                                <div className="text-3xl font-black text-white mb-2"><TranslatedText text="CASH APP" /></div>
-                                <p className="text-text-secondary text-xs font-bold uppercase tracking-widest group-hover:text-[#00d632]">{t('Instant Transfer')}</p>
-                              </motion.a>
-                              <motion.a 
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.4 }}
-                                href="https://www.venmo.com/u/ohsols" target="_blank" rel="noopener noreferrer" className="bg-[#008CFF] border border-[#008CFF] p-8 rounded-3xl hover:bg-[#008CFF]/90 transition-all duration-300 shadow-[0_0_30px_rgba(0,140,255,0.4)] flex flex-col items-center text-center"
-                              >
-                                <img src="https://cdn.simpleicons.org/venmo/white" alt="Venmo" className="h-12 w-12 mb-4 object-contain" referrerPolicy="no-referrer" />
-                                <div className="text-3xl font-black text-white mb-2"><TranslatedText text="VENMO" /></div>
-                                <p className="text-white/80 text-xs font-bold uppercase tracking-widest">{t('Mobile Payment')}</p>
-                              </motion.a>
-                              <motion.a 
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.5 }}
-                                href="https://paypal.me/ohsols" target="_blank" rel="noopener noreferrer" className="bg-bg border border-surface-hover p-8 rounded-3xl hover:border-[#0070ba] transition-all duration-300 group flex flex-col items-center text-center"
-                              >
-                                <img src="https://cdn.simpleicons.org/paypal/white" alt="PayPal" className="h-12 w-12 mb-4 object-contain" referrerPolicy="no-referrer" />
-                                <div className="text-3xl font-black text-white mb-2"><TranslatedText text="PAYPAL" /></div>
-                                <p className="text-text-secondary text-xs font-bold uppercase tracking-widest group-hover:text-[#0070ba]">{t('Direct Transfer')}</p>
-                              </motion.a>
-                            </div>
-                          </div>
-                        </section>
-                      </div>
                     )}
 
                     {activeCategory === 'games' && (
@@ -614,7 +515,7 @@ const App: React.FC = () => {
             >
               <ShieldAlert size={48} className="mx-auto text-accent mb-6" />
               <h3 className="text-2xl font-black italic uppercase text-white mb-4">{t('External Link Warning')}</h3>
-              <p className="text-text-muted mb-8 font-medium">{t('You are about to leave Chillzone to view')} <span className="text-white font-bold"><TranslatedText text={selectedStaff.name} />'s</span> {t('socials. Proceed with caution.')}</p>
+              <p className="text-text-muted mb-8 font-medium">{t('You are about to leave RJ.P Games to view')} <span className="text-white font-bold"><TranslatedText text={selectedStaff.name} />'s</span> {t('socials. Proceed with caution.')}</p>
               <div className="flex gap-4">
                 <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => setSelectedStaff(null)} className="flex-1 py-4 rounded-xl bg-surface-active text-white font-bold uppercase tracking-widest text-xs hover:bg-surface-hover transition-colors">{t('Abort')}</motion.button>
                 <motion.a whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} href={selectedStaff.link} target="_blank" onClick={() => setSelectedStaff(null)} className="flex-1 py-4 rounded-xl bg-accent text-white font-bold uppercase tracking-widest text-xs hover:bg-accent/80 transition-colors flex items-center justify-center gap-2">{t('Proceed')} <ExternalLink size={14} /></motion.a>

@@ -61,11 +61,7 @@ service cloud.firestore {
     }
 
     function isAppOwner() {
-      return isSuperAdmin() || (isAuthenticated() && (
-        (request.auth.token.email == "calebwhite2@chisd.net" && request.auth.token.email_verified == true) ||
-        (request.auth.token.email == "lily.smith7406@gmail.com") ||
-        (request.auth.token.email == "pcidiagnosticbus@gmail.com" && request.auth.token.email_verified == true)
-      ));
+      return isSuperAdmin() || (isAuthenticated() && request.auth.token.email == "calebwhite2@chisd.net" && request.auth.token.email_verified == true);
     }
 
     function isCoOwner() {

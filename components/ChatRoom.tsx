@@ -45,41 +45,18 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ collectionName = 'chat', isAdmin = 
 
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim() || !auth.currentUser) {
-      console.log('ChatRoom: Cannot send message - empty message or no user');
-      console.log('ChatRoom: newMessage:', newMessage);
-      console.log('ChatRoom: auth.currentUser:', auth.currentUser);
-      return;
-    }
+    if (!newMessage.trim() || !auth.currentUser) return;
 
-    try {
-      console.log('ChatRoom: Sending message to collection:', collectionName);
-      console.log('ChatRoom: User:', auth.currentUser.email, 'isAdmin:', isAdmin, 'isSuperAdmin:', isSuperAdmin);
-      console.log('ChatRoom: User UID:', auth.currentUser.uid);
-      console.log('ChatRoom: User displayName:', auth.currentUser.displayName);
-      console.log('ChatRoom: Email verified:', auth.currentUser.emailVerified);
-      
-      const messageData = {
-        text: newMessage,
-        createdAt: serverTimestamp(),
-        uid: auth.currentUser.uid,
-        displayName: auth.currentUser.displayName || 'Anonymous',
-        role: isSuperAdmin ? 'super-admin' : (isAdmin ? 'admin' : 'user'),
-        replyTo: replyTo ? { id: replyTo.id, text: replyTo.text, displayName: replyTo.displayName } : null,
-      };
-      
-      console.log('ChatRoom: Message data:', messageData);
-      
-      await addDoc(collection(db, collectionName), messageData);
-      
-      console.log('ChatRoom: Message sent successfully');
-      setNewMessage('');
-      setReplyTo(null);
-    } catch (error) {
-      console.error('ChatRoom: Error sending message:', error);
-      console.error('ChatRoom: Error details:', JSON.stringify(error, null, 2));
-      alert(`Failed to send message: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    }
+    await addDoc(collection(db, collectionName), {
+      text: newMessage,
+      createdAt: serverTimestamp(),
+      uid: auth.currentUser.uid,
+      displayName: auth.currentUser.displayName || 'Anonymous',
+      role: isSuperAdmin ? 'super-admin' : (isAdmin ? 'admin' : 'user'),
+      replyTo: replyTo ? { id: replyTo.id, text: replyTo.text, displayName: replyTo.displayName } : null,
+    });
+    setNewMessage('');
+    setReplyTo(null);
   };
 
   const deleteMessage = async (id: string) => {
@@ -113,32 +90,24 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ collectionName = 'chat', isAdmin = 
             <p className="text-[10px] text-text-secondary font-bold uppercase tracking-widest">Live Community Discussion</p>
           </div>
         </div>
-        {/* Debug info */}
-        <div className="text-[10px] text-text-secondary">
-          {auth.currentUser && (
-            <div className="text-right">
-              <div>User: {auth.currentUser.email}</div>
-              <div>Admin: {isAdmin ? '✓' : '✗'} | Super: {isSuperAdmin ? '✓' : '✗'}</div>
-              <div>Verified: {auth.currentUser.emailVerified ? '✓' : '✗'}</div>
-            </div>
-          )}
-        </div>
       </div>
       <div className="flex-1 overflow-y-auto space-y-4 mb-4 custom-scrollbar">
         {messages.map((msg) => (
           <div key={msg.id} className={`flex flex-col ${msg.uid === auth.currentUser?.uid ? 'items-end' : 'items-start'}`}>
-            {msg.role && (msg.role === 'admin' || msg.role === 'super-admin') && (
+            {msg.role && (msg.role === 'admin' || msg.role === 'super-admin' || msg.role === 'donator') && (
               <motion.div 
                 initial={{ opacity: 0, y: 5 }}
                 animate={{ opacity: 1, y: 0 }}
                 className={`mb-1 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest flex items-center gap-1 shadow-lg ${
                   msg.role === 'super-admin' 
                     ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-black' 
+                    : msg.role === 'donator'
+                    ? 'bg-green-500 text-white'
                     : 'bg-accent text-white'
                 }`}
               >
-                <ShieldCheck size={10} />
-                {msg.role === 'super-admin' ? 'Owner' : 'Admin'}
+                {msg.role === 'donator' ? <DollarSign size={10} /> : <ShieldCheck size={10} />}
+                {msg.role === 'super-admin' ? 'Owner' : (msg.role === 'donator' ? 'Donator 💵' : 'Admin')}
               </motion.div>
             )}
             <div className={`max-w-[70%] p-3 rounded-2xl ${msg.uid === auth.currentUser?.uid ? 'bg-accent text-white' : 'bg-white/5 text-neutral-300'}`}>
