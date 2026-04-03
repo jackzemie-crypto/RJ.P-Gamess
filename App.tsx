@@ -137,7 +137,7 @@ const getInitialCategory = (): Category => {
   if (validCategories.includes(normalizedPath)) {
     return normalizedPath;
   }
-  return 'home';
+  return 'movies';
 };
 
 const App: React.FC = () => {
@@ -367,7 +367,7 @@ const App: React.FC = () => {
       if (validCategories.includes(normalizedPath)) {
         setActiveCategory(normalizedPath);
       } else {
-        setActiveCategory('home');
+        setActiveCategory('movies');
       }
     };
     window.addEventListener('popstate', handlePopState);
@@ -730,7 +730,7 @@ const App: React.FC = () => {
                             {t('Devs')}
                           </h1>
                           <p className="text-text-muted text-lg font-medium max-w-2xl mx-auto">
-                            {t('The team behind ChillZone.')} <span className="text-accent font-bold">{t('Click on our cards')}</span> {t('to visit our personal sites and socials!')}
+                            {t('The team behind RJ.P Games.')} <span className="text-accent font-bold">{t('Click on our cards')}</span> {t('to visit our personal sites and socials!')}
                           </p>
                         </div>
                         <section>
@@ -868,7 +868,7 @@ const App: React.FC = () => {
                           className="text-center mb-16"
                         >
                           <h1 className="text-7xl font-black italic uppercase tracking-tighter text-white mb-4">Community Chat</h1>
-                          <p className="text-text-secondary max-w-2xl mx-auto font-medium">Connect with other members of ChillZone. Share your thoughts, request content, and hang out with the community.</p>
+                          <p className="text-text-secondary max-w-2xl mx-auto font-medium">Connect with other members of RJ.P Games. Share your thoughts, request content, and hang out with the community.</p>
                         </motion.div>
                         
                         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 relative z-10">
@@ -904,17 +904,6 @@ const App: React.FC = () => {
                                 </li>
                               </ul>
                             </div>
-                            
-                            <div className="bg-accent/10 border border-accent/20 rounded-2xl p-6 shadow-xl">
-                              <h3 className="text-xl font-black italic uppercase tracking-tighter text-accent mb-2">Support Us</h3>
-                              <p className="text-xs text-text-secondary mb-4">Help keep ChillZone alive by donating. Donators get a special badge in chat!</p>
-                              <button 
-                                onClick={() => setActiveCategory('donate')}
-                                className="w-full py-3 bg-accent text-white rounded-xl font-black uppercase tracking-widest text-xs hover:bg-accent/90 transition-colors"
-                              >
-                                Donate Now
-                              </button>
-                            </div>
                           </div>
                         </div>
 
@@ -930,7 +919,7 @@ const App: React.FC = () => {
                           className="text-center mb-16"
                         >
                           <h1 className="text-7xl font-black italic uppercase tracking-tighter text-white mb-4">Staff Lounge</h1>
-                          <p className="text-text-secondary max-w-2xl mx-auto font-medium">Private discussion area for ChillZone staff members. Coordinate updates and manage the site.</p>
+                          <p className="text-text-secondary max-w-2xl mx-auto font-medium">Private discussion area for RJ.P Games staff members. Coordinate updates and manage the site.</p>
                         </motion.div>
                         
                         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 relative z-10">
