@@ -66,13 +66,18 @@ export function GamesHub() {
           : `<div class="w-full h-full rounded-lg bg-surface-800 flex items-center justify-center"><p class="text-text-500">No Image</p></div>`;
 
         return `
-          <div
-            onclick="window.opengme('${gme.file_name}', '${gme.title}', '${gme.frame}')"
-            class="group relative inline-block w-64 h-40 m-2 cursor-pointer overflow-hidden rounded-xl border border-overlay bg-bg shadow-sm"
-          >
-            ${thumb_html}
-            <div class="absolute inset-0 flex items-start justify-start p-3 bg-black bg-opacity-50 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+          <div class="group relative inline-block w-64 h-40 m-2 overflow-hidden rounded-xl border border-overlay bg-bg shadow-sm">
+            <div onclick="window.opengme('${gme.file_name}', '${gme.title}', '${gme.frame}')" class="cursor-pointer w-full h-full">
+              ${thumb_html}
+            </div>
+            <div class="absolute inset-0 flex flex-col items-start justify-between p-3 bg-black bg-opacity-50 opacity-0 transition-opacity duration-300 group-hover:opacity-100 pointer-events-none">
               <h3 class="text-white text-lg font-bold p-2">${gme.title}</h3>
+              <button 
+                onclick="event.stopPropagation(); window.opengmeBlank('${gme.file_name}', '${gme.title}', '${gme.frame}')"
+                class="pointer-events-auto px-3 py-1.5 bg-accent text-white text-xs font-bold uppercase rounded-lg hover:bg-accent/80 transition-all"
+              >
+                Open in about:blank
+              </button>
             </div>
           </div>
         `;
@@ -187,6 +192,39 @@ export function GamesHub() {
           };
           frame.src = "/asdf.html";
         }
+      };
+
+      // --- Open in about:blank ---
+      (window as any).opengmeBlank = async (file_name: string, title: string, frameGme: string) => {
+        const gameUrl = frameGme === "true" 
+          ? `https://raw.githack.com/Hydra-Network/hydra-assets/main/gmes/${file_name}`
+          : `https://raw.githubusercontent.com/Hydra-Network/hydra-assets/main/gmes/${file_name}`;
+        
+        const aboutBlankWindow = window.open('about:blank', '_blank');
+        if (!aboutBlankWindow) {
+          alert('Popup blocked! Please allow popups for this site.');
+          return;
+        }
+
+        const html = `
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <title>${title}</title>
+              <style>
+                body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
+                iframe { border: none; width: 100%; height: 100%; }
+              </style>
+            </head>
+            <body>
+              <iframe src="${gameUrl}" allowfullscreen></iframe>
+            </body>
+          </html>
+        `;
+
+        aboutBlankWindow.document.open();
+        aboutBlankWindow.document.write(html);
+        aboutBlankWindow.document.close();
       };
 
       (window as any).closegme = () => {
